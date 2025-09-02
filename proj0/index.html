@@ -1,0 +1,168 @@
+<!-- Run the command from project folder -->
+<!-- pandoc Proj0.md -o index.html --template=../theme.html  --metadata title="16-825: Learning for 3D Vision HW0" --metadata author="Daksh Adhar" --metadata date="Sep 2025" -->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16-825: Learning for 3D Vision HW0</title>
+  <meta name="author" content="Daksh Adhar" />
+  <meta name="date" content="2 Sep 2025" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #0f172a;          /* slate-900 */
+      --muted: #475569;       /* slate-600 */
+      --border: #e2e8f0;      /* slate-200 */
+      --accent: #2563eb;      /* blue-600 */
+      --accent-weak: #dbeafe; /* blue-100 */
+      --code-bg: #0b1020;     /* dark indigo */
+      --code-fg: #e6e6e6;
+      --inline-bg: #f1f5f9;   /* slate-100 */
+      --callout: #fef3c7;     /* amber-100 */
+      --link-visited: #7c3aed;/* violet-600 */
+      --shadow: 0 1px 2px rgba(2,6,23,0.06), 0 4px 16px rgba(2,6,23,0.06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --fg: #e5e7eb;
+        --muted: #94a3b8;
+        --border: #1f2a44;
+        --accent: #60a5fa;
+        --accent-weak: #0b2a55;
+        --code-bg: #0d0f17;
+        --code-fg: #d1d5db;
+        --inline-bg: #1f2937;
+        --callout: #3b2f0b;
+        --link-visited: #a78bfa;
+        --shadow: none;
+      }
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--fg);
+      background: var(--bg);
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Layout */
+    .page {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 1.25rem 4rem 1.25rem;
+    }
+    header.site {
+      position: sticky;
+      top: 0; backdrop-filter: saturate(180%) blur(8px);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    .site__inner { max-width: 900px; margin: 0 auto; padding: .75rem 1.25rem; display: flex; align-items: baseline; gap: .75rem; }
+    .brand { font-weight: 700; letter-spacing: .2px; }
+    .meta { color: var(--muted); font-size: .9rem; margin-left: auto; }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 { line-height: 1.25; margin: 2rem 0 0.75rem; font-weight: 700; }
+    h1 { font-size: clamp(1.8rem, 1.2rem + 2vw, 2.4rem); }
+    h2 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem); border-bottom: 1px solid var(--border); padding-bottom: .25rem; }
+    h3 { font-size: 1.25rem; }
+    p { margin: 0 0 1rem; }
+    small, figcaption { color: var(--muted); }
+
+    /* Links */
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:visited { color: var(--link-visited); }
+
+    /* Code */
+    code { background: var(--inline-bg); padding: .15rem .35rem; border-radius: .3rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 0.95em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: .6rem; overflow: auto; box-shadow: var(--shadow); }
+    pre code { background: transparent; padding: 0; color: inherit; }
+
+    /* Lists & blockquotes */
+    ul, ol { padding-left: 1.5rem; }
+    blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: .25rem solid var(--accent); background: var(--accent-weak); color: #0f172a; }
+    @media (prefers-color-scheme: dark) { blockquote { color: var(--fg); } }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-variant-numeric: tabular-nums; }
+    thead th { text-align: left; border-bottom: 2px solid var(--border); }
+    th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: color-mix(in srgb, var(--accent-weak) 40%, transparent); }
+
+    /* Images/figures */
+    img, video, canvas { max-width: 100%; height: auto; border-radius: .5rem; }
+    figure { margin: 1.25rem 0; }
+
+    /* Callouts (use Markdown blockquote or custom divs) */
+    .callout { background: var(--callout); border: 1px solid var(--border); padding: .75rem .9rem; border-radius: .6rem; }
+
+    /* TOC (Pandoc --toc) */
+    #TOC { border: 1px solid var(--border); border-radius: .6rem; padding: 1rem; background: color-mix(in srgb, var(--accent-weak) 20%, transparent); }
+    #TOC > ul { list-style: none; padding-left: 0; }
+    #TOC a { text-decoration: none; }
+
+    /* Footnotes (Pandoc) */
+    .footnotes { font-size: .95rem; color: var(--muted); }
+    .footnotes hr { border: none; border-top: 1px solid var(--border); }
+
+    /* Utility */
+    .card { border: 1px solid var(--border); border-radius: .8rem; padding: 1rem; box-shadow: var(--shadow); background: var(--bg); }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+    /* Print friendly */
+    @media print {
+      header.site { display: none; }
+      .page { margin: 0; max-width: none; }
+      a { color: black; text-decoration: underline; }
+      pre { white-space: pre-wrap; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site">
+    <div class="site__inner">
+      <div class="brand"><span>16-825: Learning for 3D Vision HW0</span></div>
+      <div class="meta">
+        <span>Daksh Adhar</span>
+        <span> · 2 Sep 2025</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    
+    
+    <article id="content">
+      
+      <h2 id="task-1">Task 1</h2>
+      <p>Prompt: “Hi chat gpt, Can you give me a puzzle to solve?” Answer: Here’s a classic, clean brain-burner:</p>
+      <p><strong>The 12-Coin Counterfeit Puzzle</strong></p>
+      <p>You have 12 coins. One is counterfeit and differs in weight (could be heavier <strong>or</strong> lighter); the other 11 are genuine and identical. You have a balance scale and may use it at most <strong>three</strong> times.</p>
+      <p><strong>Task:</strong> Determine <strong>which</strong> coin is counterfeit <strong>and</strong> whether it is heavier or lighter, in three weighings.</p>
+      <p>Rules:</p>
+      <ul>
+      <li>A balance scale only tells you left pan heavier / right pan heavier / balance.</li>
+      <li>You can place any number of coins on either side (including zero).</li>
+      <li>You may reuse coins across weighings and choose the next weighing based on prior outcomes.</li>
+      </ul>
+      <p>Give me your weighing plan (what you put on each side for the 1st, 2nd, and 3rd weighings) and how you’ll interpret each possible result to identify the bad coin and its bias.</p>
+      <p>If you want a hint, say “hint 1” and I’ll give a minimal nudge.</p>
+      <h2 id="task-2">Task 2</h2>
+      <figure>
+      <img src="./data/media_1ed522a3c69fb307df32f331290987ca16ce212cf.png" alt="" /><figcaption>Source: https://www.adobe.com/products/substance3d/discover/3d-rendering.html</figcaption>
+      </figure>
+      <h2 id="task-3">Task 3</h2>
+      <figure>
+      <img src="./data/giphy.gif" alt="" /><figcaption>Source: https://giphy.com/explore/the-minion</figcaption>
+      </figure>
+    </article>
+
+  </main>
+</body>
+</html>
