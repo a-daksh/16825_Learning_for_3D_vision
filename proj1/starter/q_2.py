@@ -1,6 +1,7 @@
 """
 Usage:
-    python -m starter.q_2 --image_size 256 --render_style dynamic --shape tetrahedron
+    python -m starter.q_2 --shape tetrahedron
+    python -m starter.q_2 --shape cube
 """
 import argparse
 
@@ -12,7 +13,7 @@ import imageio
 from starter.utils import get_device, get_mesh_renderer
 
 
-def render_shape(shape, image_size=256, device=None, mode='static'):
+def render_shape(shape, image_size=256, device=None):
     if device is None:
         device = get_device()
 
@@ -83,48 +84,30 @@ def render_shape(shape, image_size=256, device=None, mode='static'):
     )
     mesh = mesh.to(device)
     
-    if mode=='static':
+    images=[]
+    for azimuth in range(0,360,10):
+        R,T=pytorch3d.renderer.cameras.look_at_view_transform(5, -10, azimuth)
+
         cameras = pytorch3d.renderer.FoVPerspectiveCameras(
-            R=torch.eye(3).unsqueeze(0), T=torch.tensor([[0, 0, ]]), fov=60, device=device
+            R=R, T=T, fov=60, device=device
         )
 
         lights = pytorch3d.renderer.PointLights(location=[[0, 0, -3]], device=device)
+
         rend = renderer(mesh, cameras=cameras, lights=lights)
-        rend = rend.cpu().numpy()[0, ..., :3]  # (B, H, W, 4) -> (H, W, 3)
-        return rend
-    
-    if mode=='dynamic':
-        images=[]
-        for azimuth in range(0,360,10):
-            R,T=pytorch3d.renderer.cameras.look_at_view_transform(5, -10, azimuth)
+        images.append((rend.cpu().numpy()[0,..., :3] * 255).astype('uint8'))
 
-            cameras = pytorch3d.renderer.FoVPerspectiveCameras(
-                R=R, T=T, fov=60, device=device
-            )
-
-            lights = pytorch3d.renderer.PointLights(location=[[0, 0, -3]], device=device)
-
-            rend = renderer(mesh, cameras=cameras, lights=lights)
-            images.append((rend.cpu().numpy()[0,..., :3] * 255).astype('uint8'))
-
-        return images
+    return images
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--image_size", type=int, default=256)
-    parser.add_argument("--render_style", type=str, default='static', help="Decided what type of rendering you want; choose between static or dynamic")
     parser.add_argument("--shape", type=str, help="Choose shape between tetrahedron and cube")
     args = parser.parse_args()
     if args.shape!='tetrahedron' and args.shape!='cube':
         raise ValueError("Invalid shape")
     
-    if args.render_style=='static':
-        image = render_shape(shape=args.shape, image_size=args.image_size, mode='static')
-        plt.imsave(f"images/{args.shape}.png", image)
-    elif args.render_style=='dynamic':
-        images = render_shape(shape=args.shape, image_size=args.image_size, mode='dynamic')  # List of images [(H, W, 3)]
-        duration = 2000 // 15  # Convert FPS (frames per second) to duration (ms per frame)
-        imageio.mimsave(f"images/{args.shape}.gif", images, duration=duration,loop=0)
-    else:
-        raise ValueError("Invalid render style")
+    images = render_shape(shape=args.shape, image_size=args.image_size)  # List of images [(H, W, 3)]
+    duration = 2000 // 15  # Convert FPS (frames per second) to duration (ms per frame)
+    imageio.mimsave(f"images/my_answers/{args.shape}.gif", images, duration=duration,loop=0)

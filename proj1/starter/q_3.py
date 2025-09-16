@@ -1,8 +1,6 @@
 """
-Sample code to render a cow.
-
 Usage:
-    python -m starter.q_3 --image_size 256
+    python -m starter.q_3
 """
 import argparse
 
@@ -68,4 +66,4 @@ if __name__ == "__main__":
 
     images = render_cow(cow_path=args.cow_path, image_size=args.image_size)  # List of images [(H, W, 3)]
     duration = 2000 // 15  # Convert FPS (frames per second) to duration (ms per frame)
-    imageio.mimsave("images/coloured_cow.gif", images, duration=duration,loop=0)
+    imageio.mimsave("images/my_answers/cow_retextured.gif", images, duration=duration,loop=0)

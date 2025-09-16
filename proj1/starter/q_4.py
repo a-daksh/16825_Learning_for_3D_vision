@@ -38,7 +38,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--cow_path", type=str, default="data/cow_with_axis.obj")
     parser.add_argument("--image_size", type=int, default=256)
-    parser.add_argument("--output_path", type=str, default="images/")
+    parser.add_argument("--output_path", type=str, default="images/my_answers/")
     args = parser.parse_args()
     plt.imsave(f"{args.output_path}transform1.jpg",render_textured_cow(cow_path=args.cow_path, image_size=args.image_size, R_relative=[[0, 1, 0], [-1, 0, 0], [0, 0, 1]], T_relative=[0,0,0]))
     plt.imsave(f"{args.output_path}transform2.jpg",render_textured_cow(cow_path=args.cow_path, image_size=args.image_size, R_relative=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], T_relative=[0,0,2]))

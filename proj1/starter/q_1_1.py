@@ -62,7 +62,7 @@ def render_cow(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--cow_path", type=str, default="data/cow.obj")
-    parser.add_argument("--output_path", type=str, default="images/cow_render.jpg")
+    parser.add_argument("--output_path", type=str, default="images/my_answers/cow_render.gif")
     parser.add_argument("--image_size", type=int, default=256)
     args = parser.parse_args()
 

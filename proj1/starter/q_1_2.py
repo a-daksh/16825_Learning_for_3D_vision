@@ -58,7 +58,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--num_frames", type=int, default=10)
     parser.add_argument("--duration", type=float, default=3)
-    parser.add_argument("--output_file", type=str, default="images/dolly.gif")
+    parser.add_argument("--output_file", type=str, default="images/my_answers/dolly.gif")
     parser.add_argument("--image_size", type=int, default=256)
     args = parser.parse_args()
     dolly_zoom(
