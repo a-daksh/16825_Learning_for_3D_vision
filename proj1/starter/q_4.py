@@ -11,7 +11,7 @@ import torch
 from starter.utils import get_device, get_mesh_renderer
 
 
-def render_textured_cow(
+def transform_cow(
     cow_path="data/cow_with_axis.obj",
     image_size=256,
     R_relative=[[0, 0, 1], [0, 1, 0], [-1, 0, 0]],
@@ -35,12 +35,7 @@ def render_textured_cow(
     return rend[0, ..., :3].cpu().numpy()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--cow_path", type=str, default="data/cow_with_axis.obj")
-    parser.add_argument("--image_size", type=int, default=256)
-    parser.add_argument("--output_path", type=str, default="images/my_answers/")
-    args = parser.parse_args()
-    plt.imsave(f"{args.output_path}transform1.jpg",render_textured_cow(cow_path=args.cow_path, image_size=args.image_size, R_relative=[[0, 1, 0], [-1, 0, 0], [0, 0, 1]], T_relative=[0,0,0]))
-    plt.imsave(f"{args.output_path}transform2.jpg",render_textured_cow(cow_path=args.cow_path, image_size=args.image_size, R_relative=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], T_relative=[0,0,2]))
-    plt.imsave(f"{args.output_path}transform3.jpg",render_textured_cow(cow_path=args.cow_path, image_size=args.image_size, R_relative=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], T_relative=[0.5, -0.5, 0]))
-    plt.imsave(f"{args.output_path}transform4.jpg",render_textured_cow(cow_path=args.cow_path, image_size=args.image_size, R_relative=[[0, 0, 1], [0, 1, 0], [-1, 0, 0]], T_relative=[-3, 0, 3]))
+    plt.imsave("my_images/transform1.jpg",transform_cow(R_relative=[[0, 1, 0], [-1, 0, 0], [0, 0, 1]], T_relative=[0,0,0]))
+    plt.imsave("my_images/transform2.jpg",transform_cow(R_relative=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], T_relative=[0,0,2]))
+    plt.imsave("my_images/transform3.jpg",transform_cow(R_relative=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], T_relative=[0.5, -0.5, 0]))
+    plt.imsave("my_images/transform4.jpg",transform_cow(R_relative=[[0, 0, 1], [0, 1, 0], [-1, 0, 0]], T_relative=[-3, 0, 3]))

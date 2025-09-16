@@ -12,7 +12,7 @@ import imageio
 from starter.utils import get_device, get_mesh_renderer, load_cow_mesh
 
 
-def render_cow(
+def retexture_cow(
     cow_path="data/cow.obj", image_size=256, color=[0.7, 0.7, 1], device=None
 ):
     if device is None:
@@ -59,11 +59,7 @@ def render_cow(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--cow_path", type=str, default="data/cow.obj")
-    parser.add_argument("--image_size", type=int, default=256)
-    args = parser.parse_args()
 
-    images = render_cow(cow_path=args.cow_path, image_size=args.image_size)  # List of images [(H, W, 3)]
+    images = retexture_cow()  # List of images [(H, W, 3)]
     duration = 2000 // 15  # Convert FPS (frames per second) to duration (ms per frame)
-    imageio.mimsave("images/my_answers/cow_retextured.gif", images, duration=duration,loop=0)
+    imageio.mimsave("my_images/cow_retextured.gif", images, duration=duration,loop=0)

@@ -102,12 +102,11 @@ def render_shape(shape, image_size=256, device=None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--image_size", type=int, default=256)
     parser.add_argument("--shape", type=str, help="Choose shape between tetrahedron and cube")
     args = parser.parse_args()
     if args.shape!='tetrahedron' and args.shape!='cube':
         raise ValueError("Invalid shape")
     
-    images = render_shape(shape=args.shape, image_size=args.image_size)  # List of images [(H, W, 3)]
+    images = render_shape(shape=args.shape)  # List of images [(H, W, 3)]
     duration = 2000 // 15  # Convert FPS (frames per second) to duration (ms per frame)
-    imageio.mimsave(f"images/my_answers/{args.shape}.gif", images, duration=duration,loop=0)
+    imageio.mimsave(f"my_images/{args.shape}.gif", images, duration=duration,loop=0)

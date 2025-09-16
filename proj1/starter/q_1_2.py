@@ -20,7 +20,7 @@ def dolly_zoom(
     num_frames=10,
     duration=3,
     device=None,
-    output_file="output/dolly.gif",
+    output_file="my_images/dolly.gif",
 ):
     if device is None:
         device = get_device()
@@ -55,15 +55,4 @@ def dolly_zoom(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--num_frames", type=int, default=10)
-    parser.add_argument("--duration", type=float, default=3)
-    parser.add_argument("--output_file", type=str, default="images/my_answers/dolly.gif")
-    parser.add_argument("--image_size", type=int, default=256)
-    args = parser.parse_args()
-    dolly_zoom(
-        image_size=args.image_size,
-        num_frames=args.num_frames,
-        duration=args.duration,
-        output_file=args.output_file,
-    )
+    dolly_zoom()
