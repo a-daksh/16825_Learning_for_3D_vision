@@ -1,6 +1,6 @@
 """
 Usage:
-    python -m starter.dolly_zoom --num_frames 10
+    python -m starter.q_1_2
 """
 
 import argparse
@@ -34,8 +34,12 @@ def dolly_zoom(
 
     renders = []
     for fov in tqdm(fovs):
-        distance = 3  # TODO: change this.
-        T = [[0, 0, 3]]  # TODO: Change this.
+        # according to wikipedia distance = width / 2 tan(FOV/2) 
+        # where width is the constant width of the scene 
+        # (i played around with this value to make sure the cow remains in the scene throughout) 
+        width = 5
+        distance = width/(2*np.tan(fov*np.pi/360))  # TODO: change this.
+        T = [[0, 0, distance]]  # TODO: Change this.
         cameras = pytorch3d.renderer.FoVPerspectiveCameras(fov=fov, T=T, device=device)
         rend = renderer(mesh, cameras=cameras, lights=lights)
         rend = rend[0, ..., :3].cpu().numpy()  # (N, H, W, 3)
@@ -47,7 +51,7 @@ def dolly_zoom(
         draw = ImageDraw.Draw(image)
         draw.text((20, 20), f"fov: {fovs[i]:.2f}", fill=(255, 0, 0))
         images.append(np.array(image))
-    imageio.mimsave(output_file, images, duration=duration)
+    imageio.mimsave(output_file, images, duration=duration, loop=0)
 
 
 if __name__ == "__main__":
