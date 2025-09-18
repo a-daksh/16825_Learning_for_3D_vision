@@ -7,6 +7,7 @@
 
 A 360-degree gif video that shows many continuous views of the
 provided cow mesh. 
+
 ![Cow being rendered from different angles](my_images/cow_render.gif)
 
 
@@ -98,20 +99,24 @@ A set (R_relative, T_relative) such that the new camera extrinsics with `R = R_r
 
 - The R-relative should rotate the camera by −90° about it's Z-axis. This can come from a standard -90degree rotation matrix along z and since there is no translation difference the T_relative should be 0.
 `R_relative=[[0, 1, 0], [-1, 0, 0], [0, 0, 1]], T_relative=[0,0,0]`
+
 ![Cow render](my_images/transform1.jpg)
 
 - There should be no rotation along any axis rather simple translation along the z axis. T tells the final position of camera in world cooridnates therefore R can be identity and T can be some fixed value (played around with this to get best match)
  `R_relative=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], T_relative=[0,0,2]`
+
 ![Cow render](my_images/transform2.jpg)
 
 
 - The object shifts left and up in the frame, therefore, there should be no rotation but rather motion along both x and y axis. The actual value can be in the ballpark but the form of R and T should remain same with R being identity and T having some positive value on x (representing left) and negative on y(representing up)
  `R_relative=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], T_relative=[0.5, -0.5, 0]`
+
 ![Cow render](my_images/transform3.jpg)
 
 
 - This image requires rotation by +90° about the Y-axis, then a translation (left in X and forward in Z) keeping the camera at the original distance from centre.
  `R_relative=[[0, 0, 1], [0, 1, 0], [-1, 0, 0]], T_relative=[-3, 0, 3]`
+
 ![Cow render](my_images/transform4.jpg)
 
 
@@ -157,6 +162,7 @@ Now we will render a [torus](https://en.wikipedia.org/wiki/Torus) point cloud by
     z = r*torch.cos(Theta)
 ```
 Where `Theta` and `Phi` can take any value from `0 to 2*pi`
+
 ![Torus from parametric definition](my_images/torus_parametric.gif)
 
 - For octahedron, we use an approximate definition (taken from ChatGPT) 
@@ -171,6 +177,7 @@ z = r_oct * torch.cos(Theta)
 
 ```
 Where theta can take values between `0` and `pi` and phi `can` take values between `0` to `2*pi`
+
 ![Octahedron from parametric definition](my_images/octahedron_parametric.gif)
 
 
@@ -184,6 +191,7 @@ In this part, we will explore representing geometry as a function in the form of
 X, Y, Z = torch.meshgrid([torch.linspace(min_value, max_value, voxel_size)] * 3)
 voxels = (torch.sqrt(X**2 + Y**2) - R)**2 + Z**2 - r**2
 ```
+
 ![Torus as an implicit surface](my_images/torus_implicit.gif)
 
 - To define an octahedron as a voxel grid we use the defintion
@@ -194,6 +202,7 @@ X, Y, Z = torch.meshgrid(torch.linspace(-2, 2, 100),
 voxels = torch.abs(X) + torch.abs(Y) + torch.abs(Z) <= 1
     
 ```
+
 ![Octahedron as an implicit surface](my_images/octahedron_implicit.gif)
 
 #### Comparision between rendering as a mesh vs as a point cloud

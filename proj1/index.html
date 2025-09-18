@@ -1,0 +1,341 @@
+<!-- Run the command from project folder -->
+<!-- pandoc Proj0.md -o index.html --template=../theme.html  --metadata title="16-825: Learning for 3D Vision HW0" --metadata author="Daksh Adhar" --metadata date="Sep 2025" -->
+<!-- Then do scp -r ~/16825_L3D/proj0 dadhar@linux.andrew.cmu.edu:/afs/andrew.cmu.edu/course/16/825/www/projects/dadhar/ -->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16-825: Learning for 3D Vision HW1</title>
+  <meta name="author" content="Daksh Adhar" />
+  <meta name="date" content="Sep 2025" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #0f172a;          /* slate-900 */
+      --muted: #475569;       /* slate-600 */
+      --border: #e2e8f0;      /* slate-200 */
+      --accent: #2563eb;      /* blue-600 */
+      --accent-weak: #dbeafe; /* blue-100 */
+      --code-bg: #0b1020;     /* dark indigo */
+      --code-fg: #e6e6e6;
+      --inline-bg: #f1f5f9;   /* slate-100 */
+      --callout: #fef3c7;     /* amber-100 */
+      --link-visited: #7c3aed;/* violet-600 */
+      --shadow: 0 1px 2px rgba(2,6,23,0.06), 0 4px 16px rgba(2,6,23,0.06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --fg: #e5e7eb;
+        --muted: #94a3b8;
+        --border: #1f2a44;
+        --accent: #60a5fa;
+        --accent-weak: #0b2a55;
+        --code-bg: #0d0f17;
+        --code-fg: #d1d5db;
+        --inline-bg: #1f2937;
+        --callout: #3b2f0b;
+        --link-visited: #a78bfa;
+        --shadow: none;
+      }
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--fg);
+      background: var(--bg);
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Layout */
+    .page {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 1.25rem 4rem 1.25rem;
+    }
+    header.site {
+      position: sticky;
+      top: 0; backdrop-filter: saturate(180%) blur(8px);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    .site__inner { max-width: 900px; margin: 0 auto; padding: .75rem 1.25rem; display: flex; align-items: baseline; gap: .75rem; }
+    .brand { font-weight: 700; letter-spacing: .2px; }
+    .meta { color: var(--muted); font-size: .9rem; margin-left: auto; }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 { line-height: 1.25; margin: 2rem 0 0.75rem; font-weight: 700; }
+    h1 { font-size: clamp(1.8rem, 1.2rem + 2vw, 2.4rem); }
+    h2 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem); border-bottom: 1px solid var(--border); padding-bottom: .25rem; }
+    h3 { font-size: 1.25rem; }
+    p { margin: 0 0 1rem; }
+    small, figcaption { color: var(--muted); }
+
+    /* Links */
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:visited { color: var(--link-visited); }
+
+    /* Code */
+    code { background: var(--inline-bg); padding: .15rem .35rem; border-radius: .3rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 0.95em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: .6rem; overflow: auto; box-shadow: var(--shadow); }
+    pre code { background: transparent; padding: 0; color: inherit; }
+
+    /* Lists & blockquotes */
+    ul, ol { padding-left: 1.5rem; }
+    blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: .25rem solid var(--accent); background: var(--accent-weak); color: #0f172a; }
+    @media (prefers-color-scheme: dark) { blockquote { color: var(--fg); } }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-variant-numeric: tabular-nums; }
+    thead th { text-align: left; border-bottom: 2px solid var(--border); }
+    th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: color-mix(in srgb, var(--accent-weak) 40%, transparent); }
+
+    /* Images/figures */
+    img, video, canvas { max-width: 100%; height: auto; border-radius: .5rem; }
+    figure { margin: 1.25rem 0; }
+
+    /* Callouts (use Markdown blockquote or custom divs) */
+    .callout { background: var(--callout); border: 1px solid var(--border); padding: .75rem .9rem; border-radius: .6rem; }
+
+    /* TOC (Pandoc --toc) */
+    #TOC { border: 1px solid var(--border); border-radius: .6rem; padding: 1rem; background: color-mix(in srgb, var(--accent-weak) 20%, transparent); }
+    #TOC > ul { list-style: none; padding-left: 0; }
+    #TOC a { text-decoration: none; }
+
+    /* Footnotes (Pandoc) */
+    .footnotes { font-size: .95rem; color: var(--muted); }
+    .footnotes hr { border: none; border-top: 1px solid var(--border); }
+
+    /* Utility */
+    .card { border: 1px solid var(--border); border-radius: .8rem; padding: 1rem; box-shadow: var(--shadow); background: var(--bg); }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+    /* Print friendly */
+    @media print {
+      header.site { display: none; }
+      .page { margin: 0; max-width: none; }
+      a { color: black; text-decoration: underline; }
+      pre { white-space: pre-wrap; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site">
+    <div class="site__inner">
+      <div class="brand"><span>16-825: Learning for 3D Vision HW1</span></div>
+      <div class="meta">
+        <span>Daksh Adhar</span>
+        <span> · Sep 2025</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    
+    
+    <article id="content">
+      
+      <h1 id="assignment-1-rendering-basics-with-pytorch3d-total-100-points-10-bonus">16-825 Assignment 1: Rendering Basics with PyTorch3D (Total: 100 Points + 10 Bonus)</h1>
+      <h2 id="practicing-with-cameras-15-points">1. Practicing with Cameras (15 Points)</h2>
+      <h3 id="degree-renders-5-points">1.1. 360-degree Renders (5 points)</h3>
+      <p>A 360-degree gif video that shows many continuous views of the provided cow mesh.</p>
+      <figure>
+      <img src="my_images/cow_render.gif" alt="" /><figcaption>Cow being rendered from different angles</figcaption>
+      </figure>
+      <h3 id="re-creating-the-dolly-zoom-10-points">1.2 Re-creating the Dolly Zoom (10 points)</h3>
+      <p>The <a href="https://en.wikipedia.org/wiki/Dolly_zoom">Dolly Zoom</a> is a famous camera effect, first used in the Alfred Hitchcock film <a href="https://www.youtube.com/watch?v=G7YJkBcRWB8">Vertigo</a>. The core idea is to change the focal length of the camera while moving the camera in a way such that the subject is the same size in the frame, producing a rather unsettling effect.</p>
+      <figure>
+      <img src="my_images/dolly.gif" alt="" /><figcaption>gif with dolly zoom effect</figcaption>
+      </figure>
+      <h2 id="practicing-with-meshes-10-points">2. Practicing with Meshes (10 Points)</h2>
+      <h3 id="constructing-a-tetrahedron-5-points">2.1 Constructing a Tetrahedron (5 points)</h3>
+      <p>In this part, you will practice working with the geometry of 3D meshes. Construct a tetrahedron mesh and then render it from multiple viewpoints.</p>
+      <figure>
+      <img src="my_images/tetrahedron.gif" alt="" /><figcaption>A 360-degree gif animation of a tetrahedron</figcaption>
+      </figure>
+      <p>Since we have a tetrahedron, which has <strong>four triangular faces, four vertices and six edges</strong>, we can simply define the vertices as points of the mesh and each face of the tetrahedron becomes the triangular face of a mesh. This can easily be defined as</p>
+      <pre><code>vertices=torch.tensor([
+                  [0,0,0],
+                  [2,0,0],
+                  [1,0,2],
+                  [1,2,1]], dtype=torch.float32)
+      faces=torch.tensor([
+                  [0,1,2],
+                  [2,3,0],
+                  [2,1,3],
+                  [1,0,3]], dtype=torch.int64)</code></pre>
+      <h3 id="constructing-a-cube-5-points">2.2 Constructing a Cube (5 points)</h3>
+      <p>Constructing a cube mesh is not as direct as tetrahedron because each face of cube cannot directly become the face of mesh. We would rather need to define two triangles in each square face of cube. The number of vertices of cube are 8 and faces are 6 but since each face is square we need to define triangular faces in each square to be used for mesh generation. So two triangular faces in each square accounting to 12 triangular faces in total</p>
+      <figure>
+      <img src="my_images/cube.gif" alt="" /><figcaption>A 360-degree gif animation of a cube</figcaption>
+      </figure>
+      <p>This is defined as</p>
+      <pre><code>vertices=torch.tensor([
+          [0,0,0],
+          [1,0,0],
+          [1,0,1],
+          [0,0,1],
+          [0,1,0],
+          [1,1,0],
+          [1,1,1],
+          [0,1,1]], dtype=torch.float32)
+      faces=torch.tensor([
+          [0,4,5],
+          [0,1,5],
+          [2,1,5],
+          [2,6,5],
+          [3,2,6],
+          [3,7,6],
+          [3,0,4],
+          [3,7,4],
+          [7,4,5],
+          [7,6,5],
+          [3,0,1],
+          [3,2,1]], dtype=torch.int64)</code></pre>
+      <h2 id="re-texturing-a-mesh-10-points">3. Re-texturing a mesh (10 points)</h2>
+      <p>The front of the cow corresponds to the vertex with the smallest z-coordinate <code>z_min</code>, and the back of the cow corresponds to the vertex with the largest z-coordinate <code>z_max</code>. Then, we will assign the color of each vertex using linear interpolation based on the z-value of the vertex:</p>
+      <div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>alpha <span class="op">=</span> (z <span class="op">-</span> z_min) <span class="op">/</span> (z_max <span class="op">-</span> z_min)</span>
+      <span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>color <span class="op">=</span> alpha <span class="op">*</span> color2 <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> alpha) <span class="op">*</span> color1</span></code></pre></div>
+      <p>The final output looks something like this:</p>
+      <figure>
+      <img src="my_images/cow_retextured.gif" alt="" /><figcaption>Retextured cow render</figcaption>
+      </figure>
+      <p>In this case, <code>color1 = [1, 0, 0]</code> i.e. RED and <code>color2 = [0, 1, 0]</code> i.e. GREEN.</p>
+      <h2 id="camera-transformations-10-points">4. Camera Transformations (10 points)</h2>
+      <p>When working with 3D, finding a reasonable camera pose is often the first step to producing a useful visualization, and an important first step toward debugging.</p>
+      <p>Running <code>python -m starter.camera_transforms</code> produces the following image using the camera extrinsics rotation <code>R_0</code> and translation <code>T_0</code>:</p>
+      <figure>
+      <img src="images/transform_none.jpg" alt="" /><figcaption>Cow render</figcaption>
+      </figure>
+      <p>Since we are pre-multyplying the matrices by relative ones, R_relative would represent camera being rotated around its own optical axiz. And T would represent it’s the world-space position of the camera centre after accounting for both new rotation and any extra translation.</p>
+      <p>A set (R_relative, T_relative) such that the new camera extrinsics with <code>R = R_relative @ R_0</code> and <code>T = R_relative @ T_0 + T_relative</code> produces each of the following images are:</p>
+      <ul>
+      <li>The R-relative should rotate the camera by −90° about it’s Z-axis. This can come from a standard -90degree rotation matrix along z and since there is no translation difference the T_relative should be 0. <code>R_relative=[[0, 1, 0], [-1, 0, 0], [0, 0, 1]], T_relative=[0,0,0]</code></li>
+      </ul>
+      <figure>
+      <img src="my_images/transform1.jpg" alt="" /><figcaption>Cow render</figcaption>
+      </figure>
+      <ul>
+      <li>There should be no rotation along any axis rather simple translation along the z axis. T tells the final position of camera in world cooridnates therefore R can be identity and T can be some fixed value (played around with this to get best match) <code>R_relative=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], T_relative=[0,0,2]</code></li>
+      </ul>
+      <figure>
+      <img src="my_images/transform2.jpg" alt="" /><figcaption>Cow render</figcaption>
+      </figure>
+      <ul>
+      <li>The object shifts left and up in the frame, therefore, there should be no rotation but rather motion along both x and y axis. The actual value can be in the ballpark but the form of R and T should remain same with R being identity and T having some positive value on x (representing left) and negative on y(representing up) <code>R_relative=[[1, 0, 0], [0, 1, 0], [0, 0, 1]], T_relative=[0.5, -0.5, 0]</code></li>
+      </ul>
+      <figure>
+      <img src="my_images/transform3.jpg" alt="" /><figcaption>Cow render</figcaption>
+      </figure>
+      <ul>
+      <li>This image requires rotation by +90° about the Y-axis, then a translation (left in X and forward in Z) keeping the camera at the original distance from centre. <code>R_relative=[[0, 0, 1], [0, 1, 0], [-1, 0, 0]], T_relative=[-3, 0, 3]</code></li>
+      </ul>
+      <figure>
+      <img src="my_images/transform4.jpg" alt="" /><figcaption>Cow render</figcaption>
+      </figure>
+      <h2 id="rendering-generic-3d-representations-45-points">5. Rendering Generic 3D Representations (45 Points)</h2>
+      <h3 id="rendering-point-clouds-from-rgb-d-images-10-points">5.1 Rendering Point Clouds from RGB-D Images (10 points)</h3>
+      <p>In this part, we will practice rendering point clouds constructed from 2 RGB-D images from the <a href="https://github.com/facebookresearch/co3d">Common Objects in 3D Dataset</a>.</p>
+      <p float="left">
+      <figure style="display:inline-block; margin-right:10px; text-align:center;">
+      <img src="my_images/plant_first_render.gif" width="250"/>
+      <figcaption>
+      View 1
+      </figcaption>
+      </figure>
+      <figure style="display:inline-block; margin-right:10px; text-align:center;">
+      <img src="my_images/plant_second_render.gif" width="250"/>
+      <figcaption>
+      View 2
+      </figcaption>
+      </figure>
+      <figure style="display:inline-block; text-align:center;">
+      <img src="my_images/plant_union_render.gif" width="250"/>
+      <figcaption>
+      Union of both
+      </figcaption>
+      </figure>
+      </p>
+      <h3 id="parametric-functions-10-5-points">5.2 Parametric Functions (10 + 5 points)</h3>
+      <p>A parametric function generates a 3D point for each point in the source domain. For example, given an elevation <code>theta</code> and azimuth <code>phi</code>, we can parameterize the surface of a unit sphere as <code>(sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi))</code>.</p>
+      <p>By sampling values of <code>theta</code> and <code>phi</code>, we can generate a sphere point cloud.</p>
+      <p>Now we will render a <a href="https://en.wikipedia.org/wiki/Torus">torus</a> point cloud by sampling its parametric function.</p>
+      <ul>
+      <li>We use the parametric definition of a torus as given on wikipedia-</li>
+      </ul>
+      <pre><code>    x = (R + r*torch.sin(Theta)) * torch.cos(Phi)
+          y = (R + r*torch.sin(Theta)) * torch.sin(Phi)
+          z = r*torch.cos(Theta)</code></pre>
+      <p>Where <code>Theta</code> and <code>Phi</code> can take any value from <code>0 to 2*pi</code></p>
+      <figure>
+      <img src="my_images/torus_parametric.gif" alt="" /><figcaption>Torus from parametric definition</figcaption>
+      </figure>
+      <ul>
+      <li>For octahedron, we use an approximate definition (taken from ChatGPT)</li>
+      </ul>
+      <pre><code>r_oct = 1.0 / (torch.abs(torch.sin(Theta) * torch.cos(Phi)) + 
+                  torch.abs(torch.sin(Theta) * torch.sin(Phi)) + 
+                  torch.abs(torch.cos(Theta)))
+
+      x = r_oct * torch.sin(Theta) * torch.cos(Phi)
+      y = r_oct * torch.sin(Theta) * torch.sin(Phi)
+      z = r_oct * torch.cos(Theta)
+      </code></pre>
+      <p>Where theta can take values between <code>0</code> and <code>pi</code> and phi <code>can</code> take values between <code>0</code> to <code>2*pi</code></p>
+      <figure>
+      <img src="my_images/octahedron_parametric.gif" alt="" /><figcaption>Octahedron from parametric definition</figcaption>
+      </figure>
+      <h3 id="implicit-surfaces-15-5-points">5.3 Implicit Surfaces (15 + 5 points)</h3>
+      <p>In this part, we will explore representing geometry as a function in the form of an implicit function. In general, given a function F(x, y, z), we can define the surface to be the zero level-set of F i.e. (x,y,z) such that F(x, y, z) = 0. To visualize such a representation, we can discretize the 3D space and evaluate the implicit function, storing the values in a voxel grid. Finally, to recover the mesh, we can run the <a href="https://en.wikipedia.org/wiki/Marching_cubes">marching cubes</a> algorithm to extract the 0-level set.</p>
+      <ul>
+      <li>To define torus as a voxel grid we use the defintion</li>
+      </ul>
+      <pre><code>X, Y, Z = torch.meshgrid([torch.linspace(min_value, max_value, voxel_size)] * 3)
+      voxels = (torch.sqrt(X**2 + Y**2) - R)**2 + Z**2 - r**2</code></pre>
+      <figure>
+      <img src="my_images/torus_implicit.gif" alt="" /><figcaption>Torus as an implicit surface</figcaption>
+      </figure>
+      <ul>
+      <li>To define an octahedron as a voxel grid we use the defintion</li>
+      </ul>
+      <pre><code>X, Y, Z = torch.meshgrid(torch.linspace(-2, 2, 100), 
+                              torch.linspace(-2, 2, 100), 
+                              torch.linspace(-2, 2, 100))
+      voxels = torch.abs(X) + torch.abs(Y) + torch.abs(Z) &lt;= 1
+          </code></pre>
+      <figure>
+      <img src="my_images/octahedron_implicit.gif" alt="" /><figcaption>Octahedron as an implicit surface</figcaption>
+      </figure>
+      <h4 id="comparision-between-rendering-as-a-mesh-vs-as-a-point-cloud">Comparision between rendering as a mesh vs as a point cloud</h4>
+      <ul>
+      <li><p><strong>Rendering speed</strong>: Point clouds render faster since they only plot points, while meshes take longer because surfaces and shading must be computed through rasterization.</p></li>
+      <li><p><strong>Rendering quality</strong>: Meshes give smoother surfaces and realistic lighting, whereas point clouds often look scattered and incomplete.</p></li>
+      <li><p><strong>Ease of use</strong>: Point clouds are simple to render as each point can be considered as a small sphere with corresponding colour, but meshes require extra steps like building connectivity, graphing surface normals and calcualting light features.</p></li>
+      <li><p><strong>Memory usage</strong>: Point clouds usually store just positions and color, while meshes need both vertices and face data. At a low level meshes store points similar to point clouds but also another array (or some other data structure) holding the indices of points that form a face, so they use more memory.</p></li>
+      </ul>
+      <hr />
+      <h2 id="do-something-fun-10-points">6. Do Something Fun (10 points)</h2>
+      <p>Now that you have learned to work with various 3D represenations and render them, it is time to try something fun. Create your own 3D structures, or render something in an interesting way, or creatively texture, or anything else that appeals to you - the (3D) world is your oyster! If you wish to download additional meshes, <a href="https://free3d.com/">Free3D</a> is a good place to start.</p>
+      <h3 id="disco-cow-animation">6.1 Disco Cow Animation</h3>
+      <p>For this section, I created a disco cow animation that combines multiple rendering techniques:</p>
+      <ul>
+      <li><strong>Rotating camera</strong>: 360-degree camera rotation around the scene</li>
+      <li><strong>Dynamic lighting</strong>: Colored lights that change color over time using sine waves</li>
+      <li><strong>Moving light source</strong>: The light orbits around the cow creating dynamic shadows</li>
+      <li><strong>Floor geometry</strong>: Simple floor mesh to ground the cow in the scene</li>
+      </ul>
+      <p>The animation creates a disco effect where the cow and floor are illuminated by moving colored lights, creating a disco-like visualization.</p>
+      <figure>
+      <img src="my_images/disco_cow.gif" alt="" /><figcaption>Disco cow animation</figcaption>
+      </figure>
+    </article>
+
+  </main>
+</body>
+</html>
