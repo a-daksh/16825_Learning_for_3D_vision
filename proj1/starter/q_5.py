@@ -1,3 +1,9 @@
+"""
+python -m starter.q_5 --render parametric --which_parameter torus
+python -m starter.q_5 --render parametric --which_parameter octahedron
+python -m starter.q_5 --render implicit --which_implicit torus
+python -m starter.q_5 --render implicit --which_implicit octahedron
+"""
 import argparse
 import pickle
 
@@ -240,4 +246,7 @@ if __name__ == "__main__":
         if args.which_implicit=='torus':
             render_torus_mesh()
         elif args.which_implicit=='octahedron':
+            render_oct_mesh()
+        else:
+            render_torus_mesh()
             render_oct_mesh()

@@ -1,6 +1,4 @@
 """
-Sample code to render a cow.
-
 Usage:
     python -m starter.q_1_1
 """
