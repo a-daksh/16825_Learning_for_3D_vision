@@ -18,6 +18,7 @@ def print_menu():
     print("3. Re-texturing a mesh")
     print("4. Camera Transformations")
     print("5. Rendering Generic 3D Representations")
+    print("6. Do you want to see a Cow in a Disco?")
     print("q. Quit")
     print("="*50)
 
@@ -167,6 +168,9 @@ def main():
             subprocess.run([sys.executable, "-m", "starter.q_4"])
         elif choice == '5':
             handle_question_5()
+        elif choice == '6':
+            print("Running cow in a disco...")
+            subprocess.run([sys.executable, "-m", "starter.q_6"])
         elif choice == 'q':
             print("Goodbye!")
             break
