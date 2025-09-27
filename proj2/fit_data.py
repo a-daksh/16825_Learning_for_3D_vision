@@ -12,7 +12,7 @@ from pytorch3d.utils import ico_sphere
 from r2n2_custom import R2N2
 from pytorch3d.ops import sample_points_from_meshes
 from pytorch3d.structures import Meshes
-from utils import render_voxels, render_point_cloud
+from utils import render_voxels, render_point_cloud, render_mesh
 import dataset_location
 import torch
 
@@ -150,6 +150,7 @@ def train_model(args):
 
         # fitting
         fit_mesh(mesh_src, mesh_tgt, args)        
+        render_mesh("chair_mesh", mesh_src, device=args.device)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Model Fit', parents=[get_args_parser()])

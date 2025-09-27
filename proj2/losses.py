@@ -22,7 +22,18 @@ def chamfer_loss(point_cloud_src,point_cloud_tgt):
 	return loss_chamfer
 
 def smoothness_loss(mesh_src):
-	# loss_laplacian = 
 	# implement laplacian smoothening loss
-	# return loss_laplacian
-	pass
+	verts=mesh_src.verts_list()[0]
+	k=6
+	
+	dist=verts.unsqueeze(1) - verts.unsqueeze(0)
+	dist=(dist.pow(2).sum(dim=2)).pow(0.5)
+	
+	nearest_neighs=(torch.topk(dist, k,dim=1,largest=False).indices)[:,1:]   # N X K-1
+	neighbors=verts[nearest_neighs]
+	centre=neighbors.mean(1)
+
+	temp=((verts-centre)**2).sum(1)
+	loss_laplacian=(temp**0.5).mean(0)
+
+	return loss_laplacian

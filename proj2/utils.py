@@ -80,3 +80,28 @@ def render_point_cloud(name, verts, image_size=256, rgb=(1, 1, 1),radius=0.01, d
     duration = 2000 // 15  # Convert FPS (frames per second) to duration (ms per frame)
     imageio.mimsave(f"my_images/{name}.gif", images, duration=duration,loop=0)
  
+def render_mesh(name, mesh, image_size=256, color=[0.7, 0.7, 1], device=None):
+    if device is None:
+        raise AssertionError("Specify Device !!!!!!!")
+
+    lights = pytorch3d.renderer.PointLights(location=[[0, 0, -3]], device=device)
+    raster_settings = RasterizationSettings(image_size=image_size, blur_radius=0.0, faces_per_pixel=1)
+    renderer = MeshRenderer(
+        rasterizer=MeshRasterizer(raster_settings=raster_settings),
+        shader=HardPhongShader(device=device, lights=lights),
+    )
+
+    # set per-vertex color on the mesh
+    verts = mesh.verts_padded().to(device)                            # (1, V, 3)
+    verts_rgb = torch.ones_like(verts) * torch.tensor(color, device=device)
+    mesh.textures = pytorch3d.renderer.TexturesVertex(verts_features=verts_rgb)
+
+    images = []
+    for azimuth in range(0, 360, 10):
+        R, T = pytorch3d.renderer.look_at_view_transform(3*verts.max(), 0, azimuth, device=device)
+        cameras = pytorch3d.renderer.FoVPerspectiveCameras(R=R, T=T, device=device)
+        rend = renderer(mesh, cameras=cameras, lights=lights)
+        images.append((rend.detach().cpu().numpy()[0, ..., :3] * 255).astype('uint8'))
+
+    duration = 2000 // 15
+    imageio.mimsave(f"my_images/{name}.gif", images, duration=duration, loop=0)
