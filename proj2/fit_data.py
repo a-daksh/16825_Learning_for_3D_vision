@@ -12,7 +12,7 @@ from pytorch3d.utils import ico_sphere
 from r2n2_custom import R2N2
 from pytorch3d.ops import sample_points_from_meshes
 from pytorch3d.structures import Meshes
-from utils import render_voxels
+from utils import render_voxels, render_point_cloud
 import dataset_location
 import torch
 
@@ -69,7 +69,7 @@ def fit_pointcloud(pointclouds_src, pointclouds_tgt, args):
     start_iter = 0
     start_time = time.time()    
     optimizer = torch.optim.Adam([pointclouds_src], lr = args.lr)
-    for step in range(start_iter, args.max_iter):
+    for step in (range(start_iter, args.max_iter)):
         iter_start_time = time.time()
 
         loss = losses.chamfer_loss(pointclouds_src, pointclouds_tgt)
@@ -129,7 +129,7 @@ def train_model(args):
 
         # fitting
         fit_voxel(voxels_src,  voxels_tgt, args)
-        render_voxels("my_chair",voxels_src, device=args.device)
+        render_voxels("chair_voxel",voxels_src, device=args.device)
 
 
     elif args.type == "point":
@@ -138,9 +138,10 @@ def train_model(args):
         mesh_tgt = Meshes(verts=[feed_cuda['verts']], faces=[feed_cuda['faces']])
         pointclouds_tgt = sample_points_from_meshes(mesh_tgt, args.n_points)
 
-        # fitting
-        fit_pointcloud(pointclouds_src, pointclouds_tgt, args)        
-    
+        # fitting   
+        fit_pointcloud(pointclouds_src, pointclouds_tgt, args)
+        render_point_cloud("chair_point_cloud",pointclouds_src, device=args.device)
+
     elif args.type == "mesh":
         # initialization
         # try different ways of initializing the source mesh        

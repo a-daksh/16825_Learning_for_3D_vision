@@ -16,7 +16,7 @@ from pytorch3d.renderer import (
 
 def render_voxels(name,voxels, image_size=256, device=None):
     if device is None:
-        AssertionError("Specify Device !!!!!!!")
+        raise AssertionError("Specify Device !!!!!!!")
     
     voxels=voxels.cpu().detach().squeeze(0)
     vertices, faces = mcubes.marching_cubes(mcubes.smooth(voxels), isovalue=0)
@@ -48,6 +48,34 @@ def render_voxels(name,voxels, image_size=256, device=None):
     
         rend = renderer(mesh, cameras=cameras, lights=lights)
         images.append((rend.cpu().numpy()[0,..., :3] * 255).astype('uint8'))
+
+    duration = 2000 // 15  # Convert FPS (frames per second) to duration (ms per frame)
+    imageio.mimsave(f"my_images/{name}.gif", images, duration=duration,loop=0)
+ 
+def render_point_cloud(name, verts, image_size=256, rgb=(1, 1, 1),radius=0.01, device=None):
+    """
+    Renders a point cloud.
+    """
+    if device is None:
+        raise AssertionError("Specify Device !!!!!!!")
+
+    raster_settings = PointsRasterizationSettings(image_size=image_size, radius=radius,)
+    renderer = PointsRenderer(
+        rasterizer=PointsRasterizer(raster_settings=raster_settings),
+        compositor=AlphaCompositor(background_color=rgb),
+    )
+    
+    points=verts.to(device)
+    features=torch.tensor(rgb).expand(1, points.shape[1],-1).to(device)
+    point_cloud = pytorch3d.structures.Pointclouds(points=points, features=features.float())
+
+    images=[]
+    for azimuth in range(0,360,10):
+        R, T = pytorch3d.renderer.look_at_view_transform(3*verts.max(), 0, azimuth)
+        cameras = pytorch3d.renderer.FoVPerspectiveCameras(R=R, T=T, device=device)
+
+        rend = renderer(point_cloud, cameras=cameras)
+        images.append((rend.detach().cpu().numpy()[0,..., :3] * 255).astype('uint8'))
 
     duration = 2000 // 15  # Convert FPS (frames per second) to duration (ms per frame)
     imageio.mimsave(f"my_images/{name}.gif", images, duration=duration,loop=0)

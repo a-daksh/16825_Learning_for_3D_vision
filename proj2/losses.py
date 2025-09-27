@@ -11,11 +11,15 @@ def voxel_loss(voxel_src,voxel_tgt):
 	return loss
 
 def chamfer_loss(point_cloud_src,point_cloud_tgt):
-	# point_cloud_src, point_cloud_src: b x n_points x 3  
-	# loss_chamfer = 
+	# point_cloud_src, point_cloud_src: b x n_points x 3  [1, 5000, 3]
 	# implement chamfer loss from scratch
-	# return loss_chamfer
-	pass
+
+	dist = (point_cloud_src[:, :, None, :] - point_cloud_tgt[:, None, :, :]).pow(2).sum(-1)
+	min_src_tgt = dist.min(dim=2).values
+	min_tgt_src = dist.min(dim=1).values
+
+	loss_chamfer = (min_src_tgt.sum(dim=1) + min_tgt_src.sum(dim=1)).mean()	
+	return loss_chamfer
 
 def smoothness_loss(mesh_src):
 	# loss_laplacian = 
