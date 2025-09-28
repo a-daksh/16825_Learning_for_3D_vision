@@ -20,9 +20,17 @@ class SingleViewto3D(nn.Module):
         if args.type == "vox":
             # Input: b x 512
             # Output: b x 32 x 32 x 32
-            pass
             # TODO:
-            # self.decoder =             
+            self.decoder = nn.Sequential(
+                nn.Linear(512, 64 * 8 * 8 * 8),           # [B, 512] -> [B, 32768]
+                nn.ReLU(inplace=True),
+                nn.Unflatten(1, (64, 8, 8, 8)),           # [B, 64, 8, 8, 8]
+                nn.ConvTranspose3d(64, 32, 4, 2, 1),      # [B, 32, 16, 16, 16]
+                nn.ReLU(inplace=True),
+                nn.ConvTranspose3d(32, 1, 4, 2, 1),       # [B, 1, 32, 32, 32]
+                nn.Sigmoid()                              # probabilities [0,1]
+            )
+
         elif args.type == "point":
             # Input: b x 512
             # Output: b x args.n_points x 3  
@@ -55,17 +63,17 @@ class SingleViewto3D(nn.Module):
         # call decoder
         if args.type == "vox":
             # TODO:
-            # voxels_pred =             
+            voxels_pred = self.decoder(encoded_feat)
             return voxels_pred
 
         elif args.type == "point":
             # TODO:
-            # pointclouds_pred =             
+            pointclouds_pred = self.decoder(encoded_feat)            
             return pointclouds_pred
 
         elif args.type == "mesh":
             # TODO:
-            # deform_vertices_pred =             
+            deform_vertices_pred = self.decoder(encoded_feat)           
             mesh_pred = self.mesh_pred.offset_verts(deform_vertices_pred.reshape([-1,3]))
             return  mesh_pred          
 
