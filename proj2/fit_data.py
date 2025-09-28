@@ -36,7 +36,7 @@ def fit_mesh(mesh_src, mesh_tgt, args):
     deform_vertices_src = torch.zeros(mesh_src.verts_packed().shape, requires_grad=True, device='cuda')
     optimizer = torch.optim.Adam([deform_vertices_src], lr = args.lr)
     print("Starting training !")
-    for step in range(start_iter, args.max_iter):
+    for step in tqdm(range(start_iter, args.max_iter)):
         iter_start_time = time.time()
 
         new_mesh_src = mesh_src.offset_verts(deform_vertices_src)
@@ -58,7 +58,7 @@ def fit_mesh(mesh_src, mesh_tgt, args):
 
         loss_vis = loss.cpu().item()
 
-        print("[%4d/%4d]; ttime: %.0f (%.2f); loss: %.3f" % (step, args.max_iter, total_time,  iter_time, loss_vis))        
+        # print("[%4d/%4d]; ttime: %.0f (%.2f); loss: %.3f" % (step, args.max_iter, total_time,  iter_time, loss_vis))        
     
     mesh_src.offset_verts_(deform_vertices_src)
 
@@ -69,7 +69,7 @@ def fit_pointcloud(pointclouds_src, pointclouds_tgt, args):
     start_iter = 0
     start_time = time.time()    
     optimizer = torch.optim.Adam([pointclouds_src], lr = args.lr)
-    for step in (range(start_iter, args.max_iter)):
+    for step in tqdm(range(start_iter, args.max_iter)):
         iter_start_time = time.time()
 
         loss = losses.chamfer_loss(pointclouds_src, pointclouds_tgt)
@@ -83,7 +83,7 @@ def fit_pointcloud(pointclouds_src, pointclouds_tgt, args):
 
         loss_vis = loss.cpu().item()
 
-        print("[%4d/%4d]; ttime: %.0f (%.2f); loss: %.3f" % (step, args.max_iter, total_time,  iter_time, loss_vis))
+        # print("[%4d/%4d]; ttime: %.0f (%.2f); loss: %.3f" % (step, args.max_iter, total_time,  iter_time, loss_vis))
     
     print('Done!')
 
