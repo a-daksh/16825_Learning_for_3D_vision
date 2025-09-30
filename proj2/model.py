@@ -22,13 +22,20 @@ class SingleViewto3D(nn.Module):
             # Output: b x 32 x 32 x 32
             # TODO:
             self.decoder = nn.Sequential(
-                nn.Linear(512, 64 * 8 * 8 * 8),           # [B, 512] -> [B, 32768]
+                nn.Linear(512, 64 * 8 * 8 * 8),
                 nn.ReLU(inplace=True),
-                nn.Unflatten(1, (64, 8, 8, 8)),           # [B, 64, 8, 8, 8]
-                nn.ConvTranspose3d(64, 32, 4, 2, 1),      # [B, 32, 16, 16, 16]
+                nn.Unflatten(1, (64, 8, 8, 8)),
+                nn.BatchNorm3d(64),
+
+                nn.ConvTranspose3d(64, 32, 4, 2, 1),
                 nn.ReLU(inplace=True),
-                nn.ConvTranspose3d(32, 1, 4, 2, 1),       # [B, 1, 32, 32, 32]
-                nn.Sigmoid()                              # probabilities [0,1]
+                nn.BatchNorm3d(32),
+
+                nn.ConvTranspose3d(32, 16, 4, 2, 1),
+                nn.ReLU(inplace=True),
+                nn.BatchNorm3d(16),
+
+                nn.ConvTranspose3d(16, 1, 1, 1, 0),
             )
 
         elif args.type == "point":

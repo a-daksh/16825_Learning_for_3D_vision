@@ -19,7 +19,7 @@ def render_voxels(name,voxels, image_size=256, device=None):
         raise AssertionError("Specify Device !!!!!!!")
     
     voxels=voxels.cpu().detach().squeeze(0)
-    vertices, faces = mcubes.marching_cubes(mcubes.smooth(voxels), isovalue=0)
+    vertices, faces = mcubes.marching_cubes(voxels.numpy(), isovalue=0.5)
     vertices = torch.tensor(vertices).float()
     faces = torch.tensor(faces.astype(int))
 
