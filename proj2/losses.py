@@ -4,8 +4,10 @@ import torch.nn.functional as F
 def voxel_loss(voxel_src,voxel_tgt):
 	# voxel_src: b x h x w x d
 	# voxel_tgt: b x h x w x d
-	critertia = F.binary_cross_entropy_with_logits
-	loss = critertia(voxel_src, voxel_tgt)
+	# Clamp to avoid numerical instability with log(0) or log(1)
+	voxel_src_clamped = torch.clamp(voxel_src, 1e-7, 1 - 1e-7)
+	critertia = F.binary_cross_entropy
+	loss = critertia(voxel_src_clamped, voxel_tgt)
 	# implement some loss for binary voxel grids
 	return loss
 

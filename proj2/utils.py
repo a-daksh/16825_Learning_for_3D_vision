@@ -14,12 +14,16 @@ from pytorch3d.renderer import (
     HardPhongShader,
 )
 
-def render_voxels(name,voxels, image_size=256, device=None):
+def render_voxels(name,voxels, image_size=256, device=None, is_normalized=True):
     if device is None:
         raise AssertionError("Specify Device !!!!!!!")
     
     voxels=voxels.cpu().detach().squeeze(0)
-    vertices, faces = mcubes.marching_cubes(voxels.numpy(), isovalue=0.5)
+    if is_normalized:
+        voxels_probs = voxels
+    else:
+        voxels_probs = torch.sigmoid(voxels)
+    vertices, faces = mcubes.marching_cubes(voxels_probs.numpy(), isovalue=0.5)
     vertices = torch.tensor(vertices).float()
     faces = torch.tensor(faces.astype(int))
 

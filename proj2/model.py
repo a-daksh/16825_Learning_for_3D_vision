@@ -36,6 +36,7 @@ class SingleViewto3D(nn.Module):
                 nn.BatchNorm3d(16),
 
                 nn.ConvTranspose3d(16, 1, 1, 1, 0),
+                nn.Sigmoid(),
             )
 
         elif args.type == "point":
