@@ -56,7 +56,7 @@ def render_voxels(name,voxels, image_size=256, device=None, is_normalized=True):
     duration = 2000 // 15  # Convert FPS (frames per second) to duration (ms per frame)
     imageio.mimsave(f"my_images/{name}.gif", images, duration=duration,loop=0)
  
-def render_point_cloud(name, verts, image_size=256, rgb=(1, 1, 1),radius=0.01, device=None):
+def render_point_cloud(name, verts, image_size=256, rgb=(1, 0, 0),radius=0.025, device=None):
     """
     Renders a point cloud.
     """
@@ -66,7 +66,7 @@ def render_point_cloud(name, verts, image_size=256, rgb=(1, 1, 1),radius=0.01, d
     raster_settings = PointsRasterizationSettings(image_size=image_size, radius=radius,)
     renderer = PointsRenderer(
         rasterizer=PointsRasterizer(raster_settings=raster_settings),
-        compositor=AlphaCompositor(background_color=rgb),
+        compositor=AlphaCompositor(background_color=(1,1,1)),
     )
     
     points=verts.to(device)

@@ -42,9 +42,26 @@ class SingleViewto3D(nn.Module):
         elif args.type == "point":
             # Input: b x 512
             # Output: b x args.n_points x 3  
+
+            # Citing AtlasNet-
+            # The architecture of our decoder is 4 fully-connected layers
+            # of size 1024, 512, 256, 128 with ReLU non-linearities on
+            # the first three layers and tanh on the final output layer
+
             self.n_point = args.n_points
             # TODO:
-            # self.decoder =             
+            self.decoder = nn.Sequential(
+                nn.Linear(512, 1024),
+                nn.ReLU(inplace=True),
+                nn.Linear(1024, 512),
+                nn.ReLU(inplace=True),
+                nn.Linear(512, 256),
+                nn.ReLU(inplace=True),
+                nn.Linear(256, 128),
+                nn.ReLU(inplace=True),
+                nn.Linear(128, self.n_point*3),
+                nn.Unflatten(1, (self.n_point, 3)),
+            )
         elif args.type == "mesh":
             # Input: b x 512
             # Output: b x mesh_pred.verts_packed().shape[0] x 3  

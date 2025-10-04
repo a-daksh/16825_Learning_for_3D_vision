@@ -167,20 +167,16 @@ def evaluate_model(args):
 
         # TODO:
         if (step % args.vis_freq) == 0:
-            # visualization block
-            input_img = images_gt.squeeze(0).cpu().numpy()
-            input_img = (input_img * 255).astype('uint8')
-            plt.imsave(f'my_images/input_{step}.png', input_img)
             
             if args.type == 'vox':
-                # import ipdb; ipdb.set_trace()
-                render_voxels(f"Trained_voxels{step}", predictions.squeeze(0), device=args.device)
+                render_voxels(f"my_vox_{step}", predictions.squeeze(0), device=args.device)
+                render_mesh(f"gt_vox_{step}", mesh_gt.to(args.device), device=args.device)
             if args.type == 'mesh':
-                import ipdb; ipdb.set_trace()
-                render_mesh(f"Trained_voxels{step}", predictions, device=args.device)
+                render_mesh(f"gt_mesh_{step}", mesh_gt.to(args.device), device=args.device)
+                render_mesh(f"my_mesh_{step}", predictions, device=args.device)
             if args.type == 'point':
-                import ipdb; ipdb.set_trace()
-                render_point_cloud(f"Trained_voxels{step}", predictions, device=args.device)
+                render_mesh(f"gt_point_{step}", mesh_gt.to(args.device), device=args.device)
+                render_point_cloud(f"my_point_{step}", predictions, device=args.device)
       
 
         total_time = time.time() - start_time
