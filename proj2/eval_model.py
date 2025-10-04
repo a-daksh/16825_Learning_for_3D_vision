@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from pytorch3d.transforms import Rotate, axis_angle_to_matrix
 import math
 import numpy as np
+from utils import render_mesh, render_point_cloud, render_voxels
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Singleto3D', add_help=False)
@@ -165,10 +166,21 @@ def evaluate_model(args):
         metrics = evaluate(predictions, mesh_gt, thresholds, args)
 
         # TODO:
-        # if (step % args.vis_freq) == 0:
-        #     # visualization block
-        #     #  rend = 
-        #     plt.imsave(f'vis/{step}_{args.type}.png', rend)
+        if (step % args.vis_freq) == 0:
+            # visualization block
+            input_img = images_gt.squeeze(0).cpu().numpy()
+            input_img = (input_img * 255).astype('uint8')
+            plt.imsave(f'my_images/input_{step}.png', input_img)
+            
+            if args.type == 'vox':
+                # import ipdb; ipdb.set_trace()
+                render_voxels(f"Trained_voxels{step}", predictions.squeeze(0), device=args.device)
+            if args.type == 'mesh':
+                import ipdb; ipdb.set_trace()
+                render_mesh(f"Trained_voxels{step}", predictions, device=args.device)
+            if args.type == 'point':
+                import ipdb; ipdb.set_trace()
+                render_point_cloud(f"Trained_voxels{step}", predictions, device=args.device)
       
 
         total_time = time.time() - start_time
