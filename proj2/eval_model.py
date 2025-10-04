@@ -167,6 +167,9 @@ def evaluate_model(args):
 
         # TODO:
         if (step % args.vis_freq) == 0:
+            input_img = images_gt.squeeze(0).cpu().numpy()
+            input_img = (input_img * 255).astype('uint8')
+            plt.imsave(f'my_images/input_image_{step}.png', input_img)
             
             if args.type == 'vox':
                 render_voxels(f"my_vox_{step}", predictions.squeeze(0), device=args.device)
