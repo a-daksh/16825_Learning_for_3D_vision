@@ -22,20 +22,24 @@ class SingleViewto3D(nn.Module):
             # Output: b x 32 x 32 x 32
             # TODO:
             self.decoder = nn.Sequential(
-                nn.Linear(512, 64 * 8 * 8 * 8),
-                nn.ReLU(inplace=True),
-                nn.Unflatten(1, (64, 8, 8, 8)),
-                nn.BatchNorm3d(64),
-
+                nn.Unflatten(1, (64, 2, 2, 2)),
                 nn.ConvTranspose3d(64, 32, 4, 2, 1),
-                nn.ReLU(inplace=True),
                 nn.BatchNorm3d(32),
+                nn.ReLU(inplace=True),
 
                 nn.ConvTranspose3d(32, 16, 4, 2, 1),
-                nn.ReLU(inplace=True),
                 nn.BatchNorm3d(16),
+                nn.ReLU(inplace=True),
 
-                nn.ConvTranspose3d(16, 1, 1, 1, 0),
+                nn.ConvTranspose3d(16, 8, 4, 2, 1),
+                nn.BatchNorm3d(8),
+                nn.ReLU(inplace=True),
+
+                nn.ConvTranspose3d(8, 4, 4, 2, 1),
+                nn.BatchNorm3d(4),
+                nn.ReLU(inplace=True),
+                
+                nn.ConvTranspose3d(4, 1, 3, 1, 1),
                 nn.Sigmoid(),
             )
 
