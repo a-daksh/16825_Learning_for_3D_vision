@@ -73,7 +73,17 @@ class SingleViewto3D(nn.Module):
             mesh_pred = ico_sphere(4, self.device)
             self.mesh_pred = pytorch3d.structures.Meshes(mesh_pred.verts_list()*args.batch_size, mesh_pred.faces_list()*args.batch_size)
             # TODO:
-            # self.decoder =             
+            self.decoder = nn.Sequential(
+                nn.Linear(512,1024),
+                nn.ReLU(inplace=True),
+                nn.Linear(1024,1024),
+                nn.ReLU(inplace=True),
+                nn.Linear(1024,1024),
+                nn.ReLU(inplace=True),
+                nn.Linear(1024,mesh_pred.verts_packed().shape[0]*3),
+                nn.Tanh(),
+                nn.Unflatten(1, (mesh_pred.verts_packed().shape[0],3)),
+            )
 
     def forward(self, images, args):
         results = dict()
