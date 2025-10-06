@@ -15,6 +15,8 @@ develop-eggs/
 dist/
 downloads/
 eggs/
+r2n2_shapenet_dataset/
+r2n2_shapenet_dataset_full/
 .eggs/
 lib/
 lib64/
