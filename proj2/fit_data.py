@@ -130,6 +130,7 @@ def train_model(args):
         # fitting
         fit_voxel(voxels_src,  voxels_tgt, args)
         render_voxels("chair_voxel",voxels_src, device=args.device)
+        render_voxels("gt_chair_voxel",voxels_tgt, device=args.device)
 
 
     elif args.type == "point":
@@ -141,6 +142,7 @@ def train_model(args):
         # fitting   
         fit_pointcloud(pointclouds_src, pointclouds_tgt, args)
         render_point_cloud("chair_point_cloud",pointclouds_src, device=args.device)
+        render_point_cloud("gt_chair_point_cloud",pointclouds_tgt, device=args.device)
 
     elif args.type == "mesh":
         # initialization
@@ -151,6 +153,7 @@ def train_model(args):
         # fitting
         fit_mesh(mesh_src, mesh_tgt, args)        
         render_mesh("chair_mesh", mesh_src, device=args.device)
+        render_mesh("gt_chair_mesh", mesh_tgt, device=args.device)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('Model Fit', parents=[get_args_parser()])
