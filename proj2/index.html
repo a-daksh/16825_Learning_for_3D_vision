@@ -1,0 +1,563 @@
+<!-- Run the command from project folder -->
+<!-- pandoc Proj0.md -o index.html --template=../theme.html  --metadata title="16-825: Learning for 3D Vision HW0" --metadata author="Daksh Adhar" --metadata date="Sep 2025" -->
+<!-- Then do scp -r ~/16825_L3D/proj0 dadhar@linux.andrew.cmu.edu:/afs/andrew.cmu.edu/course/16/825/www/projects/dadhar/ -->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16-825: Learning for 3D Vision HW2</title>
+  <meta name="author" content="Daksh Adhar" />
+  <meta name="date" content="Oct 2025" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #0f172a;          /* slate-900 */
+      --muted: #475569;       /* slate-600 */
+      --border: #e2e8f0;      /* slate-200 */
+      --accent: #2563eb;      /* blue-600 */
+      --accent-weak: #dbeafe; /* blue-100 */
+      --code-bg: #0b1020;     /* dark indigo */
+      --code-fg: #e6e6e6;
+      --inline-bg: #f1f5f9;   /* slate-100 */
+      --callout: #fef3c7;     /* amber-100 */
+      --link-visited: #7c3aed;/* violet-600 */
+      --shadow: 0 1px 2px rgba(2,6,23,0.06), 0 4px 16px rgba(2,6,23,0.06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --fg: #e5e7eb;
+        --muted: #94a3b8;
+        --border: #1f2a44;
+        --accent: #60a5fa;
+        --accent-weak: #0b2a55;
+        --code-bg: #0d0f17;
+        --code-fg: #d1d5db;
+        --inline-bg: #1f2937;
+        --callout: #3b2f0b;
+        --link-visited: #a78bfa;
+        --shadow: none;
+      }
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--fg);
+      background: var(--bg);
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Layout */
+    .page {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 1.25rem 4rem 1.25rem;
+    }
+    header.site {
+      position: sticky;
+      top: 0; backdrop-filter: saturate(180%) blur(8px);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    .site__inner { max-width: 900px; margin: 0 auto; padding: .75rem 1.25rem; display: flex; align-items: baseline; gap: .75rem; }
+    .brand { font-weight: 700; letter-spacing: .2px; }
+    .meta { color: var(--muted); font-size: .9rem; margin-left: auto; }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 { line-height: 1.25; margin: 2rem 0 0.75rem; font-weight: 700; }
+    h1 { font-size: clamp(1.8rem, 1.2rem + 2vw, 2.4rem); }
+    h2 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem); border-bottom: 1px solid var(--border); padding-bottom: .25rem; }
+    h3 { font-size: 1.25rem; }
+    p { margin: 0 0 1rem; }
+    small, figcaption { color: var(--muted); }
+
+    /* Links */
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:visited { color: var(--link-visited); }
+
+    /* Code */
+    code { background: var(--inline-bg); padding: .15rem .35rem; border-radius: .3rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 0.95em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: .6rem; overflow: auto; box-shadow: var(--shadow); }
+    pre code { background: transparent; padding: 0; color: inherit; }
+
+    /* Lists & blockquotes */
+    ul, ol { padding-left: 1.5rem; }
+    blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: .25rem solid var(--accent); background: var(--accent-weak); color: #0f172a; }
+    @media (prefers-color-scheme: dark) { blockquote { color: var(--fg); } }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-variant-numeric: tabular-nums; }
+    thead th { text-align: left; border-bottom: 2px solid var(--border); }
+    th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: color-mix(in srgb, var(--accent-weak) 40%, transparent); }
+
+    /* Images/figures */
+    img, video, canvas { max-width: 100%; height: auto; border-radius: .5rem; }
+    figure { margin: 1.25rem 0; }
+
+    /* Callouts (use Markdown blockquote or custom divs) */
+    .callout { background: var(--callout); border: 1px solid var(--border); padding: .75rem .9rem; border-radius: .6rem; }
+
+    /* TOC (Pandoc --toc) */
+    #TOC { border: 1px solid var(--border); border-radius: .6rem; padding: 1rem; background: color-mix(in srgb, var(--accent-weak) 20%, transparent); }
+    #TOC > ul { list-style: none; padding-left: 0; }
+    #TOC a { text-decoration: none; }
+
+    /* Footnotes (Pandoc) */
+    .footnotes { font-size: .95rem; color: var(--muted); }
+    .footnotes hr { border: none; border-top: 1px solid var(--border); }
+
+    /* Utility */
+    .card { border: 1px solid var(--border); border-radius: .8rem; padding: 1rem; box-shadow: var(--shadow); background: var(--bg); }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+    /* Print friendly */
+    @media print {
+      header.site { display: none; }
+      .page { margin: 0; max-width: none; }
+      a { color: black; text-decoration: underline; }
+      pre { white-space: pre-wrap; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site">
+    <div class="site__inner">
+      <div class="brand"><span>16-825: Learning for 3D Vision HW2</span></div>
+      <div class="meta">
+        <span>Daksh Adhar</span>
+        <span> · Oct 2025</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    
+    
+    <article id="content">
+      
+      <h1 id="assignment-2-single-view-to-3d">16-825 Assignment 2: Single View to 3D</h1>
+      <h2 id="exploring-loss-functions">1. Exploring loss functions</h2>
+      <h3 id="fitting-a-voxel-grid-5-points">1.1. Fitting a voxel grid (5 points)</h3>
+      <p>The loss function used for voxels is a cross entropy loss, represented as follows:</p>
+      <pre><code>    voxel_src_clamped = torch.clamp(voxel_src, 1e-7, 1 - 1e-7)
+          critertia = F.binary_cross_entropy
+          loss = critertia(voxel_src_clamped, voxel_tgt)</code></pre>
+      <h4 id="visuals-of-the-optimized-voxel-grid-along-side-the-ground-truth-voxel-grid.">Visuals of the optimized voxel grid along-side the ground truth voxel grid.</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Ground Truth Voxel</th>
+      <th>Predicted Voxel</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="my_images/gt_chair_voxel.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/chair_voxel.gif" alt="pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <h3 id="fitting-a-point-cloud-5-points">1.2. Fitting a point cloud (5 points)</h3>
+      <p>The loss function used for point clouds is chamfer_loss, represented as follows:</p>
+      <pre><code>    dist = (point_cloud_src[:, :, None, :] - point_cloud_tgt[:, None, :, :]).pow(2).sum(-1)
+          min_src_tgt = dist.min(dim=2).values
+          min_tgt_src = dist.min(dim=1).values
+
+          loss_chamfer = (min_src_tgt.sum(dim=1) + min_tgt_src.sum(dim=1)).mean() </code></pre>
+      <h4 id="visuals-of-the-optimized-point-cloud-along-side-the-ground-truth-point-cloud.">Visuals of the optimized point cloud along-side the ground truth point cloud.</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Ground Truth Point Cloud</th>
+      <th>Predicted Point Cloud</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="my_images/gt_chair_point_cloud.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/chair_point_cloud.gif" alt="pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <h3 id="fitting-a-mesh-5-points">1.3. Fitting a mesh (5 points)</h3>
+      <p>The loss function used for mesh is chamfer_loss, same as poitn clouds, and a smoothness loss represented as follows:</p>
+      <pre><code>    verts=mesh_src.verts_list()[0]
+          k=6
+          
+          dist=verts.unsqueeze(1) - verts.unsqueeze(0)
+          dist=(dist.pow(2).sum(dim=2)).pow(0.5)
+          
+          nearest_neighs=(torch.topk(dist, k,dim=1,largest=False).indices)[:,1:]   # N X K-1
+          neighbors=verts[nearest_neighs]
+          centre=neighbors.mean(1)
+
+          temp=((verts-centre)**2).sum(1)
+          loss_laplacian=(temp**0.5).mean(0)</code></pre>
+      <h4 id="visuals-of-the-optimized-mesh-along-side-the-ground-truth-mesh.">Visuals of the optimized mesh along-side the ground truth mesh.</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Ground Truth mesh</th>
+      <th>Predicted Mesh</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="my_images/gt_chair_mesh.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/chair_mesh.gif" alt="pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <h2 id="reconstructing-3d-from-single-view">2. Reconstructing 3D from single view</h2>
+      <p>This section will involve training a single view to 3D pipeline for voxels, point clouds and meshes.</p>
+      <h3 id="image-to-voxel-grid-20-points">2.1. Image to voxel grid (20 points)</h3>
+      <h4 id="decoder-network">Decoder network</h4>
+      <pre><code># Input: b x 512
+      # Output: b x 32 x 32 x 32
+      self.decoder = nn.Sequential(
+          nn.Unflatten(1, (64, 2, 2, 2)),
+          nn.ConvTranspose3d(64, 32, 4, 2, 1),
+          nn.BatchNorm3d(32),
+          nn.ReLU(inplace=True),
+
+          nn.ConvTranspose3d(32, 16, 4, 2, 1),
+          nn.BatchNorm3d(16),
+          nn.ReLU(inplace=True),
+
+          nn.ConvTranspose3d(16, 8, 4, 2, 1),
+          nn.BatchNorm3d(8),
+          nn.ReLU(inplace=True),
+
+          nn.ConvTranspose3d(8, 4, 4, 2, 1),
+          nn.BatchNorm3d(4),
+          nn.ReLU(inplace=True),
+          
+          nn.ConvTranspose3d(4, 1, 3, 1, 1),
+          nn.Sigmoid(),
+      )</code></pre>
+      <h4 id="visuals-of-four-examples-in-the-test-set.">Visuals of four examples in the test set.</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Input Image</th>
+      <th>Ground Truth Voxel</th>
+      <th>Predicted Voxel</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="my_images/input_image_vox_0.png" alt="input" /></td>
+      <td><img src="my_images/gt_vox_0.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_vox_0.gif" alt="pred" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="my_images/input_image_vox_200.png" alt="input" /></td>
+      <td><img src="my_images/gt_vox_200.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_vox_200.gif" alt="pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td><img src="my_images/input_image_vox_400.png" alt="input" /></td>
+      <td><img src="my_images/gt_vox_400.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_vox_400.gif" alt="pred" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="my_images/input_image_vox_600.png" alt="input" /></td>
+      <td><img src="my_images/gt_vox_600.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_vox_600.gif" alt="pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <h3 id="image-to-point-cloud-20-points">2.2. Image to point cloud (20 points)</h3>
+      <h4 id="decoder-network-1">Decoder network</h4>
+      <p>Citing AtlasNet-</p>
+      <pre><code>The architecture of our decoder is 4 fully-connected layers
+      of size 1024, 512, 256, 128 with ReLU non-linearities on
+      the first three layers and tanh on the final output layer</code></pre>
+      <pre><code>    # Input: b x 512
+          # Output: b x args.n_points x 3  
+
+          self.decoder = nn.Sequential(
+              nn.Linear(512, 1024),
+              nn.ReLU(inplace=True),
+              nn.Linear(1024, 512),
+              nn.ReLU(inplace=True),
+              nn.Linear(512, 256),
+              nn.ReLU(inplace=True),
+              nn.Linear(256, 128),
+              nn.ReLU(inplace=True),
+              nn.Linear(128, self.n_point*3),
+              nn.Unflatten(1, (self.n_point, 3)),
+          )</code></pre>
+      <h4 id="visuals-of-four-examples-in-the-test-set.-1">Visuals of four examples in the test set.</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Input Image</th>
+      <th>Ground Truth Point Cloud</th>
+      <th>Predicted Point Cloud</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="my_images/input_image_point_0.png" alt="input" /></td>
+      <td><img src="my_images/gt_point_0.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_point_0.gif" alt="pred" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="my_images/input_image_point_200.png" alt="input" /></td>
+      <td><img src="my_images/gt_point_200.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_point_200.gif" alt="pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td><img src="my_images/input_image_point_400.png" alt="input" /></td>
+      <td><img src="my_images/gt_point_400.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_point_400.gif" alt="pred" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="my_images/input_image_point_600.png" alt="input" /></td>
+      <td><img src="my_images/gt_point_600.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_point_600.gif" alt="pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <h3 id="image-to-mesh-20-points">2.3. Image to mesh (20 points)</h3>
+      <h4 id="decoder-network-2">Decoder network</h4>
+      <pre><code>    # Input: b x 512
+          # Output: b x mesh_pred.verts_packed().shape[0] x 3  
+
+          self.decoder = nn.Sequential(
+              nn.Linear(512,1024),
+              nn.ReLU(inplace=True),
+              nn.Linear(1024,1024),
+              nn.ReLU(inplace=True),
+              nn.Linear(1024,1024),
+              nn.ReLU(inplace=True),
+              nn.Linear(1024,mesh_pred.verts_packed().shape[0]*3),
+              nn.Tanh(),
+              nn.Unflatten(1, (mesh_pred.verts_packed().shape[0],3)),
+          )</code></pre>
+      <h4 id="visuals-of-four-examples-in-the-test-set.-2">Visuals of four examples in the test set.</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Input Image</th>
+      <th>Ground Truth Mesh</th>
+      <th>Predicted Mesh</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="my_images/input_image_mesh_0.png" alt="input" /></td>
+      <td><img src="my_images/gt_mesh_0.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_mesh_0.gif" alt="pred" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="my_images/input_image_mesh_200.png" alt="input" /></td>
+      <td><img src="my_images/gt_mesh_200.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_mesh_200.gif" alt="pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td><img src="my_images/input_image_mesh_400.png" alt="input" /></td>
+      <td><img src="my_images/gt_mesh_400.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_mesh_400.gif" alt="pred" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="my_images/input_image_mesh_600.png" alt="input" /></td>
+      <td><img src="my_images/gt_mesh_600.gif" alt="ground_truth" /></td>
+      <td><img src="my_images/my_mesh_600.gif" alt="pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <h3 id="quantitative-comparisions10-points">2.4. Quantitative comparisions(10 points)</h3>
+      <h4 id="quantitative-comparision-of-the-f1-scores-for-meshes-vs-pointcloud-vs-voxelgrids.">Quantitative comparision of the F1 scores for meshes vs pointcloud vs voxelgrids.</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Voxels</th>
+      <th>Mesh</th>
+      <th>Point Cloud</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="eval_vox.png" alt="F1_voxel" /></td>
+      <td><img src="eval_mesh.png" alt="F1_mesh" /></td>
+      <td><img src="eval_point.png" alt="F1_point" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The average F1@0.05 scores at the highest threshold are: - Point Cloud = 77.50, - Mesh = 75.03, and - Voxel = 72.33</p>
+      <p>All three plots show the F1 increasing with threshold, meaning the reconstruction aligns better with the ground truth as we allow a larger distance tolerance. The performance differences arise directly from how each representation models 3D geometry:</p>
+      <ul>
+      <li><p>Point clouds represent geometry as continuous 3D samples. They capture detailed local structure without being tied to a grid, giving higher precision and recall. Their flexibility explains the highest F1 scores overall.</p></li>
+      <li><p>Meshes provide connected, smooth surfaces, which should ideally be most accurate. However, small alignment or scale mismatches between predicted and groundtruth meshes can sharply penalize F1, slightly lowering their average compared to point clouds.</p></li>
+      <li><p>Voxel grids discretize space into fixed cells. This makes learning and inference simple but limits resolution as fine edges and thin structures are lost. Hence, voxels achieve lower F1, especially at small thresholds, because their geometry is coarse and blocky.</p></li>
+      </ul>
+      <p>Thus, each model’s F1 performance reflects its inherent trade off. Voxels are limited by discretization, meshes by sensitivity to registration, and point clouds strike the best balance between flexibility and precision.</p>
+      <h3 id="analyse-effects-of-hyperparams-variations-10-points">2.5. Analyse effects of hyperparams variations (10 points)</h3>
+      <p>For this experiment I am going to very <code>n_points</code> hyperparamater, which controls the number of points that the point cloud network will predict. The values i choose are 1000, 2500 and 3500 (Beyond 3500 my GPU gets OOM issues). #### Visuals</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Input Image</th>
+      <th>Ground Truth</th>
+      <th>Predcited@1K</th>
+      <th>Predcited@2.5K</th>
+      <th>Predcited@3.5K</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="my_images/input_image_point_0.png" /></td>
+      <td><img src="my_images/gt_point_0.gif" /></td>
+      <td><img src="my_images/my_point_0.gif" /></td>
+      <td><img src="my_images/2500_points/my_point_0.gif" /></td>
+      <td><img src="my_images/3500_points/my_point_0.gif" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="my_images/input_image_point_200.png" /></td>
+      <td><img src="my_images/gt_point_200.gif" /></td>
+      <td><img src="my_images/my_point_200.gif" /></td>
+      <td><img src="my_images/2500_points/my_point_200.gif" /></td>
+      <td><img src="my_images/3500_points/my_point_200.gif" /></td>
+      </tr>
+      <tr class="odd">
+      <td><img src="my_images/input_image_point_400.png" /></td>
+      <td><img src="my_images/gt_point_400.gif" /></td>
+      <td><img src="my_images/my_point_400.gif" /></td>
+      <td><img src="my_images/2500_points/my_point_400.gif" /></td>
+      <td><img src="my_images/3500_points/my_point_400.gif" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="my_images/input_image_point_600.png" /></td>
+      <td><img src="my_images/gt_point_600.gif" /></td>
+      <td><img src="my_images/my_point_600.gif" /></td>
+      <td><img src="my_images/2500_points/my_point_600.gif" /></td>
+      <td><img src="my_images/3500_points/my_point_600.gif" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <h4 id="f1-plots">F1 plots</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th><span class="citation" data-cites="1000">@1000</span></th>
+      <th><span class="citation" data-cites="2.5K">@2.5K</span></th>
+      <th><span class="citation" data-cites="3.5K">@3.5K</span></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="eval_point.png" /></td>
+      <td><img src="my_images/2500_points/eval_point.png" /></td>
+      <td><img src="my_images/3500_points/eval_point.png" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The observation is that the F1 score increases as the number of points to be predicted increase. This is because more points allow us to predict more parts of the 3D shape, which gives a denser reconstruction that includes more details. Further, denser predictions improve surface coverage and significantly increase recall, while precision remains mostly stable as the additional points lie close to the true surface.</p>
+      <p>Now if we were to keep increasing the number of predicted points beyond an optimal range, the model will start producing redundant or off-surface points, leading to many false positives and a gradual drop in precision causing the F1 score to saturate or even decline. ### 2.6. Interpret your model (15 points)</p>
+      <p>To get a better feel for how the model actually behaves, we visualize the voxel predictions using Marching Cubes at different iso-values (occupancy thresholds). Since each voxel contains the predicted occupancy probability (the post-sigmoid value), changing the iso-value lets us control how confident the model needs to be before calling a region “occupied.” Lower thresholds (like 0.3) give more complete shapes, but they tend to be thicker. Higher thresholds (like 0.7) only keep the high-confidence regions, which helps reveal where the model is uncertain or missing parts. This visualization complements the previous metrics by showing us where the model is being too confident or not confident enough in its predictions. 
+      
+        <table>
+          <thead>
+            <tr>
+              <th>Input Image</th>
+              <th>Ground Truth Vox</th>
+              <th>Predicted@0.2</th>
+              <th>Predicted@0.4</th>
+              <th>Predicted@0.6</th>
+              <th>Predicted@0.8</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><img src="my_images/interpret/input_image_vox_0.png" /></td>
+              <td><img src="my_images/interpret/gt_vox_0.gif" /></td>
+              <td><img src="my_images/interpret/0.2/my_vox_0.gif" /></td>
+              <td><img src="my_images/interpret/0.4/my_vox_0.gif" /></td>
+              <td><img src="my_images/interpret/0.6/my_vox_0.gif" /></td>
+              <td><img src="my_images/interpret/0.8/my_vox_0.gif" /></td>
+            </tr>
+            <tr>
+              <td><img src="my_images/interpret/input_image_vox_100.png" /></td>
+              <td><img src="my_images/interpret/gt_vox_100.gif" /></td>
+              <td><img src="my_images/interpret/0.2/my_vox_100.gif" /></td>
+              <td><img src="my_images/interpret/0.4/my_vox_100.gif" /></td>
+              <td><img src="my_images/interpret/0.6/my_vox_100.gif" /></td>
+              <td><img src="my_images/interpret/0.8/my_vox_100.gif" /></td>
+            </tr>
+            <tr>
+              <td><img src="my_images/interpret/input_image_vox_200.png" /></td>
+              <td><img src="my_images/interpret/gt_vox_200.gif" /></td>
+              <td><img src="my_images/interpret/0.2/my_vox_200.gif" /></td>
+              <td><img src="my_images/interpret/0.4/my_vox_200.gif" /></td>
+              <td><img src="my_images/interpret/0.6/my_vox_200.gif" /></td>
+              <td><img src="my_images/interpret/0.8/my_vox_200.gif" /></td>
+            </tr>
+          </tbody>
+        </table>
+      
+        <h2 id="exploring-other-architectures-datasets.">3. Exploring other architectures / datasets.</h2>
+      <h3 id="extended-dataset-for-training-10-points">3.3 Extended dataset for training (10 points)</h3>
+      <p>In this part, we train the <strong>Point cloud</strong> reconstruction model on an <strong>extended dataset</strong> containing three classes (chair, car, and plane).</p>
+      <h4 id="qualitative">Qualitative</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Input Image</th>
+      <th>Ground Truth</th>
+      <th>Trained on one class</th>
+      <th>Trained on three classes</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="my_images/full_dataset/input_image_point_0.png" /></td>
+      <td><img src="my_images/full_dataset/gt_point_0.gif" /></td>
+      <td><img src="my_images/full_dataset/my_point_0.gif" /></td>
+      <td><img src="my_images/full_dataset_full/my_point_0.gif" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="my_images/full_dataset/input_image_point_600.png" /></td>
+      <td><img src="my_images/full_dataset/gt_point_600.gif" /></td>
+      <td><img src="my_images/full_dataset/my_point_600.gif" /></td>
+      <td><img src="my_images/full_dataset_full/my_point_600.gif" /></td>
+      </tr>
+      <tr class="odd">
+      <td><img src="my_images/full_dataset/input_image_point_1200.png" /></td>
+      <td><img src="my_images/full_dataset/gt_point_1200.gif" /></td>
+      <td><img src="my_images/full_dataset/my_point_1200.gif" /></td>
+      <td><img src="my_images/full_dataset_full/my_point_1200.gif" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Qualitatively, it is clear that the network trained on all classes performs much better than the one trained only on chairs. This is because the first network had only seen chairs, and for it, the world was composed solely of chairs, anything it saw would be interpreted as some form of a chair. However, when we expose the network to other objects like cars and planes, it learns to distinguish between different categories.</p>
+      <p>Looking back at the chair, the output of the network trained only on chairs is better for that specific class, this is likely because of training steps. previously, I trained for 50K steps, and the new network was also trained for 50K steps. Since the new network has a much larger and more diverse dataset, it is imperative to train it longer. Theoretically, if we train this network for, say, 100K steps, the prediction of chairs by both networks should be equally good, with the latter network also being able to predict other classes.</p>
+      <h4 id="quantitative">Quantitative</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Trained on one class</th>
+      <th>Trained on three classes</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="my_images/full_dataset/eval_point.png" /></td>
+      <td><img src="my_images/full_dataset_full/eval_point.png" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Quantitatively, we can look at the F1 score. For the network trained on one class, we get an average F1 score of 73.2 when evaluating against all object types. This is lower than our previous chair-only score, as expected, because its predictions for cars and planes are poor, reducing the overall F1 score. For the network trained on all three classes, we get an average score of 89.3, which is lower than the chair-only network evaluated on chairs but higher than the single-class network evaluated on all classes. This aligns with the earlier reasoning that it performs better than the worst case since it has seen all classes, but slightly poorer than the best case because it requires more training for fair comparison on the common class.</p>
+      <hr />
+    </article>
+
+  </main>
+</body>
+</html>
