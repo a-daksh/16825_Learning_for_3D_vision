@@ -80,7 +80,7 @@ self.decoder = nn.Sequential(
 	nn.Sigmoid(),
 )
 ```
-#### Visuals of three examples in the test set. 
+#### Visuals of four examples in the test set. 
 | Input Image | Ground Truth Voxel | Predicted Voxel |
 |--------------|---------------------------|------------------------|
 | ![input](my_images/input_image_vox_0.png) | ![ground_truth](my_images/gt_vox_0.gif) | ![pred](my_images/my_vox_0.gif) |
@@ -113,7 +113,7 @@ Citing AtlasNet-
 		nn.Unflatten(1, (self.n_point, 3)),
 	)
 ```
-#### Visuals of three examples in the test set. 
+#### Visuals of four examples in the test set. 
 | Input Image | Ground Truth Point Cloud | Predicted Point Cloud |
 |--------------|---------------------------|------------------------|
 | ![input](my_images/input_image_point_0.png) | ![ground_truth](my_images/gt_point_0.gif) | ![pred](my_images/my_point_0.gif) |
@@ -139,7 +139,7 @@ Citing AtlasNet-
 		nn.Unflatten(1, (mesh_pred.verts_packed().shape[0],3)),
 	)
 ```
-#### Visuals of three examples in the test set. 
+#### Visuals of four examples in the test set. 
 
 | Input Image | Ground Truth Mesh | Predicted Mesh |
 |--------------|---------------------------|------------------------|
@@ -176,8 +176,13 @@ For example `n_points` or `vox_size` or `w_chamfer` or `initial mesh (ico_sphere
 Try to be unique and conclusive in your analysis.
 
 ### 2.6. Interpret your model (15 points)
-Simply seeing final predictions and numerical evaluations is not always insightful. Can you create some visualizations that help highlight what your learned model does? Be creative and think of what visualizations would help you gain insights. There is no `right' answer - although reading some papers to get inspiration might give you ideas.
 
+To get a better feel for how the model actually behaves, we visualize the voxel predictions using Marching Cubes at different iso-values (occupancy thresholds). Since each voxel contains the predicted occupancy probability (the post-sigmoid value), changing the iso-value lets us control how confident the model needs to be before calling a region "occupied." Lower thresholds (like 0.3) give more complete shapes, but they tend to be thicker. Higher thresholds (like 0.7) only keep the high-confidence regions, which helps reveal where the model is uncertain or missing parts. This visualization complements the previous metrics by showing us where the model is being too confident or not confident enough in its predictions.
+| Input Image | Ground Truth Vox | Predicted@0.2 | Predicted@0.4 | Predicted@0.6 | Predicted@0.8 |
+|-|-|-|-|-|-|
+|![](my_images/interpret/input_image_vox_0.png)|![](my_images/interpret/gt_vox_0.gif)|![](my_images/interpret/0.2/my_vox_0.gif)|![](my_images/interpret/0.4/my_vox_0.gif)|![](my_images/interpret/0.6/my_vox_0.gif)|![](my_images/interpret/0.8/my_vox_0.gif)|
+|![](my_images/interpret/input_image_vox_100.png)|![](my_images/interpret/gt_vox_100.gif)|![](my_images/interpret/0.2/my_vox_100.gif)|![](my_images/interpret/0.4/my_vox_100.gif)|![](my_images/interpret/0.6/my_vox_100.gif)|![](my_images/interpret/0.8/my_vox_100.gif)|
+|![](my_images/interpret/input_image_vox_200.png)|![](my_images/interpret/gt_vox_200.gif)|![](my_images/interpret/0.2/my_vox_200.gif)|![](my_images/interpret/0.4/my_vox_200.gif)|![](my_images/interpret/0.6/my_vox_200.gif)|![](my_images/interpret/0.8/my_vox_200.gif)|
 
 ## 3. Exploring other architectures / datasets.
 
