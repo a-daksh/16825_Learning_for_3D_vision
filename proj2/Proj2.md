@@ -171,7 +171,8 @@ All three plots show the F1 increasing with threshold, meaning the reconstructio
 Thus, each model’s F1 performance reflects its inherent trade off. Voxels are limited by discretization, meshes by sensitivity to registration, and point clouds strike the best balance between flexibility and precision.
 
 ### 2.5. Analyse effects of hyperparams variations (10 points)
-For this experiment I am going to very `n_points` hyperparamater, which controls the number of points that the point cloud network will predict. The values i choose are 1000, 2500 and 3500 (Beyond 3500 my GPU gets OOM issues). The visuals obtained from them are as follows:
+For this experiment I am going to very `n_points` hyperparamater, which controls the number of points that the point cloud network will predict. The values i choose are 1000, 2500 and 3500 (Beyond 3500 my GPU gets OOM issues). 
+#### Visuals
 
 | Input Image | Ground Truth | Predcited@1K | Predcited@2.5K | Predcited@3.5K |
 |-|-|-|-|-|
@@ -180,7 +181,7 @@ For this experiment I am going to very `n_points` hyperparamater, which controls
 | ![](my_images/input_image_point_400.png) | ![](my_images/gt_point_400.gif) | ![](my_images/my_point_400.gif) | ![](my_images/2500_points/my_point_400.gif) | ![](my_images/3500_points/my_point_400.gif) |
 | ![](my_images/input_image_point_600.png) | ![](my_images/gt_point_600.gif) | ![](my_images/my_point_600.gif) | ![](my_images/2500_points/my_point_600.gif) | ![](my_images/3500_points/my_point_600.gif) |
 
-The F1 plots are attached below:
+#### F1 plots
 
 | @1000 | @2.5K | @3.5K |
 |-|-|-|
@@ -201,10 +202,24 @@ To get a better feel for how the model actually behaves, we visualize the voxel 
 ## 3. Exploring other architectures / datasets.
 
 ### 3.3 Extended dataset for training (10 points)
-In the extended dataset, we provide a `split_3c.json` file that specifies the train/test split for the extended dataset.
+In this part, we train the **Point cloud** reconstruction model on an **extended dataset** containing three classes (chair, car, and plane).
 
-Update `dataset_location.py` so that we train the 3D reconstruction model on an extended dataset containing three classes (chair, car, and plane). Choose at least one of three models (voxel, point cloud, or mesh) to train and evaluate.
+#### Qualitative
+| Input Image | Ground Truth | Trained on one class | Trained on three classes |
+|-|-|-|-|
+| ![](my_images/full_dataset/input_image_point_0.png) | ![](my_images/full_dataset/gt_point_0.gif) | ![](my_images/full_dataset/my_point_0.gif) | ![](my_images/full_dataset_full/my_point_0.gif) |
+| ![](my_images/full_dataset/input_image_point_600.png) | ![](my_images/full_dataset/gt_point_600.gif) | ![](my_images/full_dataset/my_point_600.gif) | ![](my_images/full_dataset_full/my_point_600.gif) |
+| ![](my_images/full_dataset/input_image_point_1200.png) | ![](my_images/full_dataset/gt_point_1200.gif) | ![](my_images/full_dataset/my_point_1200.gif) | ![](my_images/full_dataset_full/my_point_1200.gif) |
 
-After training, compare the quantitative and qualitative results of "training on one class" VS "training on three classes". Explain your thoughts and analysis.
+Qualitatively, it is clear that the network trained on all classes performs much better than the one trained only on chairs. This is because the first network had only seen chairs, and for it, the world was composed solely of chairs, anything it saw would be interpreted as some form of a chair. However, when we expose the network to other objects like cars and planes, it learns to distinguish between different categories. 
 
-(Hints: for example, given the same testing samples in `chair` class, how does F1 score change comparing "training on one class" and "training on three classes"? How does the 3D consistency / diversity of the output samples change?)
+Looking back at the chair, the output of the network trained only on chairs is better for that specific class, this is likely because of training steps. previously, I trained for 50K steps, and the new network was also trained for 50K steps. Since the new network has a much larger and more diverse dataset, it is imperative to train it longer. Theoretically, if we train this network for, say, 100K steps, the prediction of chairs by both networks should be equally good, with the latter network also being able to predict other classes.
+
+#### Quantitative
+| Trained on one class | Trained on three classes |
+|-|-|
+| ![](my_images/full_dataset/eval_point.png) | ![](my_images/full_dataset_full/eval_point.png) |
+
+Quantitatively, we can look at the F1 score. For the network trained on one class, we get an average F1 score of 73.2 when evaluating against all object types. This is lower than our previous chair-only score, as expected, because its predictions for cars and planes are poor, reducing the overall F1 score. For the network trained on all three classes, we get an average score of 89.3, which is lower than the chair-only network evaluated on chairs but higher than the single-class network evaluated on all classes. This aligns with the earlier reasoning that it performs better than the worst case since it has seen all classes, but slightly poorer than the best case because it requires more training for fair comparison on the common class.
+
+---
