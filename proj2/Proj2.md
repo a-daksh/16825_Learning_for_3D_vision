@@ -171,10 +171,24 @@ All three plots show the F1 increasing with threshold, meaning the reconstructio
 Thus, each model’s F1 performance reflects its inherent trade off. Voxels are limited by discretization, meshes by sensitivity to registration, and point clouds strike the best balance between flexibility and precision.
 
 ### 2.5. Analyse effects of hyperparams variations (10 points)
-Analyse the results, by varying a hyperparameter of your choice.
-For example `n_points` or `vox_size` or `w_chamfer` or `initial mesh (ico_sphere)` etc.
-Try to be unique and conclusive in your analysis.
+For this experiment I am going to very `n_points` hyperparamater, which controls the number of points that the point cloud network will predict. The values i choose are 1000, 2500 and 3500 (Beyond 3500 my GPU gets OOM issues). The visuals obtained from them are as follows:
 
+| Input Image | Ground Truth | Predcited@1K | Predcited@2.5K | Predcited@3.5K |
+|-|-|-|-|-|
+| ![](my_images/input_image_point_0.png) | ![](my_images/gt_point_0.gif) | ![](my_images/my_point_0.gif) | ![](my_images/2500_points/my_point_0.gif) | ![](my_images/3500_points/my_point_0.gif) |
+| ![](my_images/input_image_point_200.png) | ![](my_images/gt_point_200.gif) | ![](my_images/my_point_200.gif) | ![](my_images/2500_points/my_point_200.gif) | ![](my_images/3500_points/my_point_200.gif) |
+| ![](my_images/input_image_point_400.png) | ![](my_images/gt_point_400.gif) | ![](my_images/my_point_400.gif) | ![](my_images/2500_points/my_point_400.gif) | ![](my_images/3500_points/my_point_400.gif) |
+| ![](my_images/input_image_point_600.png) | ![](my_images/gt_point_600.gif) | ![](my_images/my_point_600.gif) | ![](my_images/2500_points/my_point_600.gif) | ![](my_images/3500_points/my_point_600.gif) |
+
+The F1 plots are attached below:
+
+| @1000 | @2.5K | @3.5K |
+|-|-|-|
+| ![](eval_point.png) | ![](my_images/2500_points/eval_point.png) | ![](my_images/3500_points/eval_point.png) |
+
+The observation is that the F1 score increases as the number of points to be predicted increase. This is because more points allow us to predict more parts of the 3D shape, which gives a denser reconstruction that includes more details. Further, denser predictions improve surface coverage and significantly increase recall, while precision remains mostly stable as the additional points lie close to the true surface. 
+
+Now if we were to keep increasing the  number of predicted points beyond an optimal range, the model will start producing redundant or off-surface points, leading to many false positives and a gradual drop in precision causing the F1 score to saturate or even decline.
 ### 2.6. Interpret your model (15 points)
 
 To get a better feel for how the model actually behaves, we visualize the voxel predictions using Marching Cubes at different iso-values (occupancy thresholds). Since each voxel contains the predicted occupancy probability (the post-sigmoid value), changing the iso-value lets us control how confident the model needs to be before calling a region "occupied." Lower thresholds (like 0.3) give more complete shapes, but they tend to be thicker. Higher thresholds (like 0.7) only keep the high-confidence regions, which helps reveal where the model is uncertain or missing parts. This visualization complements the previous metrics by showing us where the model is being too confident or not confident enough in its predictions.
