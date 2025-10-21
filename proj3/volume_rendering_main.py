@@ -14,7 +14,7 @@ from pytorch3d.renderer import (
     look_at_view_transform
 )
 import matplotlib.pyplot as plt
-
+from render_functions import render_points
 from implicit import implicit_dict
 from sampler import sampler_dict
 from renderer import renderer_dict
@@ -98,18 +98,20 @@ def render_images(
 
         # TODO (Q1.3): Visualize xy grid using vis_grid
         if cam_idx == 0 and file_prefix == '':
-            pass
+            xy_vis=vis_grid(xy_grid, image_size)
+            plt.imsave("images/grid.png", xy_vis)
 
         # TODO (Q1.3): Visualize rays using vis_rays
         if cam_idx == 0 and file_prefix == '':
-            pass
+            rays=vis_rays(ray_bundle, image_size)
+            plt.imsave("images/rays.png", rays)
         
         # TODO (Q1.4): Implement point sampling along rays in sampler.py
-        pass
+        model.sampler(ray_bundle)
 
         # TODO (Q1.4): Visualize sample points as point cloud
         if cam_idx == 0 and file_prefix == '':
-            pass
+            render_points(filename=f'images/sample_points.png', points=ray_bundle.sample_points.permute(1,0,2), device=device)
 
         # TODO (Q1.5): Implement rendering in renderer.py
         out = model(ray_bundle)
