@@ -322,7 +322,7 @@ def train_nerf(
             out = model(ray_bundle)
 
             # TODO (Q3.1): Calculate loss
-            loss = None
+            loss = torch.sum((out['feature']-rgb_gt)**2)
 
             # Take the training step.
             optimizer.zero_grad()

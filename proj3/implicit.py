@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+import torch.nn as nn
 from torch import autograd
 
 from ray_utils import RayBundle
@@ -298,8 +299,39 @@ class NeuralRadianceField(torch.nn.Module):
         embedding_dim_xyz = self.harmonic_embedding_xyz.output_dim
         embedding_dim_dir = self.harmonic_embedding_dir.output_dim
 
-        pass
+        self.xyz_encoder = MLPWithInputSkips(
+            cfg.n_layers_xyz,
+            embedding_dim_xyz,
+            cfg.n_hidden_neurons_xyz,
+            embedding_dim_xyz,
+            cfg.n_hidden_neurons_xyz,
+            input_skips=cfg.append_xyz,
+        )
+        
+        self.density_layer = nn.Sequential(
+            nn.Linear(cfg.n_hidden_neurons_xyz, 1),
+            nn.ReLU()
+        )
+        
+        self.rgb_layer = nn.Sequential(
+            nn.Linear(cfg.n_hidden_neurons_xyz, cfg.n_hidden_neurons_xyz),
+            nn.ReLU(),
+            nn.Linear(cfg.n_hidden_neurons_xyz, cfg.n_hidden_neurons_dir),
+            nn.ReLU(),
+            nn.Linear(cfg.n_hidden_neurons_dir, 3),
+            nn.Sigmoid()
+        )
+    
+    def forward(self, ray_bundle):
+        sample_points = ray_bundle.sample_points.view(-1, 3)
 
+        sample_pts_embedding = self.harmonic_embedding_xyz(sample_points)
+        features = self.xyz_encoder(sample_pts_embedding, sample_pts_embedding)
+
+        density = self.density_layer(features)
+        rgb = self.rgb_layer(features)
+
+        return {"density": density, "feature": rgb}
 
 class NeuralSurface(torch.nn.Module):
     def __init__(
