@@ -202,7 +202,7 @@ def train(
             out = model(ray_bundle)
 
             # TODO (Q2.2): Calculate loss
-            loss = None
+            loss = torch.sum((out['feature']-rgb_gt)**2)
 
             # Backprop
             optimizer.zero_grad()

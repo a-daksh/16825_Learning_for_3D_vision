@@ -72,7 +72,7 @@ def sample_images_at_xy(
     batch_size = images.shape[0]
     spatial_size = images.shape[1:-1]
 
-    xy_grid = -xy_grid.view(batch_size, -1, 1, 2)
+    xy_grid = -xy_grid.view(batch_size, -1, 1, 2).to(device=images.device)
 
     images_sampled = torch.nn.functional.grid_sample(
         images.permute(0, 3, 1, 2),
@@ -109,7 +109,7 @@ def get_random_pixels_from_image(n_pixels, image_size, camera):
     xy_grid = get_pixels_from_image(image_size, camera)
     
     # TODO (Q2.1): Random subsampling of pixel coordinaters
-    pass
+    xy_grid_sub = xy_grid[torch.randperm(xy_grid.shape[0])]
 
     # Return
     return xy_grid_sub.reshape(-1, 2)[:n_pixels]
