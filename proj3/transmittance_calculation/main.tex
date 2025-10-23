@@ -95,7 +95,37 @@ Please compute the following transmittance:
 
 
 % \begin{studentsolution}
-% Write your solution here.
+For absorption $\sigma(s)$ along a ray,
+\[
+T(a,b)=\exp\!\left(-\int_a^b \sigma(s)\,ds\right).
+\]
+Here $\sigma$ is piecewise-constant:
+
+\[\sigma_1=1 \text{ on } [y1,y2]\text{ of length }L_1=2\text{ m},\]
+\[\sigma_2=0.5 \text{ on } [y2,y3],\, L_2=1\text{ m},\]
+\[\sigma_3=10 \text{ on } [y3,y4],\, L_3=3\text{ m}.\]
+
+Therefore the optical depths are
+\[
+\tau_1=\sigma_1L_1=2,\qquad
+\tau_2=\sigma_2L_2=0.5,\qquad
+\tau_3=\sigma_3L_3=30.
+\]
+
+\medskip
+\noindent\textbf{Answers}
+\[
+\boxed{T(y1,y2)=e^{-\tau_1}=e^{-2}}
+\]
+\[
+\boxed{T(y2,y4)=e^{-(\tau_2+\tau_3)}=e^{-(0.5+30)}=e^{-30.5}}
+\]
+\[
+\boxed{T(x,y4)=T(y1,y4)=e^{-(\tau_1+\tau_2+\tau_3)}=e^{-(2+0.5+30)}=e^{-32.5}}
+\]
+\[
+\boxed{T(x,y3)=T(y1,y3)=e^{-(\tau_1+\tau_2)}=e^{-(2+0.5)}=e^{-2.5}}
+\]
 % \end{studentsolution}
 
 \end{tcolorbox}
