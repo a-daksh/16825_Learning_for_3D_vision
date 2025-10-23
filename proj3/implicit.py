@@ -313,23 +313,44 @@ class NeuralRadianceField(torch.nn.Module):
             nn.ReLU()
         )
         
+        # Q3
+        # self.rgb_layer = nn.Sequential(
+        #     nn.Linear(cfg.n_hidden_neurons_xyz, cfg.n_hidden_neurons_xyz),
+        #     nn.ReLU(),
+        #     nn.Linear(cfg.n_hidden_neurons_xyz, cfg.n_hidden_neurons_dir),
+        #     nn.ReLU(),
+        #     nn.Linear(cfg.n_hidden_neurons_dir, 3),
+        #     nn.Sigmoid()
+        # )
+        # Q4
+        self.feature_layer = nn.Linear(cfg.n_hidden_neurons_xyz, cfg.n_hidden_neurons_xyz)
         self.rgb_layer = nn.Sequential(
-            nn.Linear(cfg.n_hidden_neurons_xyz, cfg.n_hidden_neurons_xyz),
-            nn.ReLU(),
-            nn.Linear(cfg.n_hidden_neurons_xyz, cfg.n_hidden_neurons_dir),
+            nn.Linear(cfg.n_hidden_neurons_xyz + embedding_dim_dir, cfg.n_hidden_neurons_dir),
             nn.ReLU(),
             nn.Linear(cfg.n_hidden_neurons_dir, 3),
-            nn.Sigmoid()
+            nn.Sigmoid(),
         )
     
     def forward(self, ray_bundle):
         sample_points = ray_bundle.sample_points.view(-1, 3)
 
+        # Q4
+        n_samples = ray_bundle.sample_points.shape[1]
+        directions = ray_bundle.directions.unsqueeze(1).expand(-1, n_samples, -1).reshape(-1, 3)
+
+        # Common
         sample_pts_embedding = self.harmonic_embedding_xyz(sample_points)
         features = self.xyz_encoder(sample_pts_embedding, sample_pts_embedding)
-
         density = self.density_layer(features)
-        rgb = self.rgb_layer(features)
+
+        # Q3
+        # rgb = self.rgb_layer(features)
+
+        # Q4
+        feature_vector = self.feature_layer(features)
+        direction_embedding = self.harmonic_embedding_dir(directions)        
+        combined = torch.cat([feature_vector, direction_embedding], dim=-1)
+        rgb = self.rgb_layer(combined)
 
         return {"density": density, "feature": rgb}
 
