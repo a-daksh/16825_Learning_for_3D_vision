@@ -384,6 +384,16 @@ class NeuralSurface(torch.nn.Module):
         self.linear_sdf = torch.nn.Linear(self.h_size_dist, 1)
         
         # TODO (Q7): Implement Neural Surface MLP to output per-point color
+        self.linear_feat = torch.nn.Linear(self.h_size_dist, self.h_size_dist)
+
+        rgb_layers = [torch.nn.Linear(self.h_size_dist + embedding_dim_xyz, self.h_size_rgb)]
+
+        for idx in range(self.n_layers_rgb - 1):
+            dim_in = self.h_size_rgb + (embedding_dim_xyz if idx in self.skips_rgb else 0)
+            rgb_layers.append(torch.nn.Linear(dim_in, self.h_size_rgb))
+
+        self.linears_rgb = torch.nn.ModuleList(rgb_layers)
+        self.linear_rgb = torch.nn.Linear(self.h_size_rgb, 3)
 
     def get_distance(
         self,
@@ -414,7 +424,16 @@ class NeuralSurface(torch.nn.Module):
             distance: N X 3 Tensor, where N is number of input points
         '''
         points = points.view(-1, 3)
-        pass
+        emb_x = self.harmonic_embedding_xyz(points)
+        x = F.relu(self.linear_feat(emb_x))
+        x = torch.cat([x, emb_x], dim=-1)
+        for i in range(self.n_layers_rgb):
+            x = F.relu(self.linears_rgb[i](x))
+            if i in self.skips_rgb:
+                x = torch.cat([x, emb_x], dim=-1)
+
+        rgb = F.sigmoid(self.linear_rgb(x))
+        return rgb
     
     def get_distance_color(
         self,
@@ -427,6 +446,24 @@ class NeuralSurface(torch.nn.Module):
         You may just implement this by independent calls to get_distance, get_color
             but, depending on your MLP implementation, it maybe more efficient to share some computation
         '''
+        emb_x = self.harmonic_embedding_xyz(points)
+        x = emb_x
+        for i in range(self.n_layers_dist):
+            x = F.relu(self.linears_dist[i](x))
+            if i in self.skips_dist:
+                x = torch.cat([x, emb_x], dim=-1)
+        distance = self.linear_sdf(x)
+
+        x = F.relu(self.linear_feat(x))
+        x = torch.cat([x, emb_x], dim=-1)
+        for i in range(self.n_layers_rgb):
+            x = F.relu(self.linears_rgb[i](x))
+            if i in self.skips_rgb:
+                x = torch.cat([x, emb_x], dim=-1)
+
+        color = F.sigmoid(self.linear_rgb(x))
+        
+        return distance, color
         
     def forward(self, points):
         return self.get_distance(points)
