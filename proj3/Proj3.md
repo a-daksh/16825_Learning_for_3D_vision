@@ -88,6 +88,7 @@ def sphere_tracing( self, implicit_fn, origins, directions, ):
 ```
 
 **Rendering:**
+
 ![Torus](images/part_5.gif)
 
 **Description:**
@@ -132,6 +133,7 @@ A high β makes the optimization easier at the start because gradients are smoot
 A low β makes training harder initially (narrow gradient region) but yields a more accurate surface once converged, since it better enforces a sharp boundary.
 
 **Experiment with hyper-parameters to and attach your best results on your webpage. Comment on the settings you chose, and why they seem to work well.**
+
 | Tuned Params | Default Params |
 |---------------------------|------------------------|
 | ![Bulldozer geometry](images/part_7_geometry_2.gif) |![Bulldozer geometry](images/part_7_geometry.gif) |

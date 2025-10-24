@@ -1,0 +1,247 @@
+<!-- Run the command from project folder -->
+<!-- pandoc Proj0.md -o index.html --template=../theme.html  --metadata title="16-825: Learning for 3D Vision HW0" --metadata author="Daksh Adhar" --metadata date="Sep 2025" -->
+<!-- Then do scp -r ~/16825_L3D/proj0 dadhar@linux.andrew.cmu.edu:/afs/andrew.cmu.edu/course/16/825/www/projects/dadhar/ -->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16-825: Learning for 3D Vision HW3</title>
+  <meta name="author" content="Daksh Adhar" />
+  <meta name="date" content="Oct 2025" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #0f172a;          /* slate-900 */
+      --muted: #475569;       /* slate-600 */
+      --border: #e2e8f0;      /* slate-200 */
+      --accent: #2563eb;      /* blue-600 */
+      --accent-weak: #dbeafe; /* blue-100 */
+      --code-bg: #0b1020;     /* dark indigo */
+      --code-fg: #e6e6e6;
+      --inline-bg: #f1f5f9;   /* slate-100 */
+      --callout: #fef3c7;     /* amber-100 */
+      --link-visited: #7c3aed;/* violet-600 */
+      --shadow: 0 1px 2px rgba(2,6,23,0.06), 0 4px 16px rgba(2,6,23,0.06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --fg: #e5e7eb;
+        --muted: #94a3b8;
+        --border: #1f2a44;
+        --accent: #60a5fa;
+        --accent-weak: #0b2a55;
+        --code-bg: #0d0f17;
+        --code-fg: #d1d5db;
+        --inline-bg: #1f2937;
+        --callout: #3b2f0b;
+        --link-visited: #a78bfa;
+        --shadow: none;
+      }
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--fg);
+      background: var(--bg);
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Layout */
+    .page {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 1.25rem 4rem 1.25rem;
+    }
+    header.site {
+      position: sticky;
+      top: 0; backdrop-filter: saturate(180%) blur(8px);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    .site__inner { max-width: 900px; margin: 0 auto; padding: .75rem 1.25rem; display: flex; align-items: baseline; gap: .75rem; }
+    .brand { font-weight: 700; letter-spacing: .2px; }
+    .meta { color: var(--muted); font-size: .9rem; margin-left: auto; }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 { line-height: 1.25; margin: 2rem 0 0.75rem; font-weight: 700; }
+    h1 { font-size: clamp(1.8rem, 1.2rem + 2vw, 2.4rem); }
+    h2 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem); border-bottom: 1px solid var(--border); padding-bottom: .25rem; }
+    h3 { font-size: 1.25rem; }
+    p { margin: 0 0 1rem; }
+    small, figcaption { color: var(--muted); }
+
+    /* Links */
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:visited { color: var(--link-visited); }
+
+    /* Code */
+    code { background: var(--inline-bg); padding: .15rem .35rem; border-radius: .3rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 0.95em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: .6rem; overflow: auto; box-shadow: var(--shadow); }
+    pre code { background: transparent; padding: 0; color: inherit; }
+
+    /* Lists & blockquotes */
+    ul, ol { padding-left: 1.5rem; }
+    blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: .25rem solid var(--accent); background: var(--accent-weak); color: #0f172a; }
+    @media (prefers-color-scheme: dark) { blockquote { color: var(--fg); } }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-variant-numeric: tabular-nums; }
+    thead th { text-align: left; border-bottom: 2px solid var(--border); }
+    th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: color-mix(in srgb, var(--accent-weak) 40%, transparent); }
+
+    /* Images/figures */
+    img, video, canvas { max-width: 100%; height: auto; border-radius: .5rem; }
+    figure { margin: 1.25rem 0; }
+
+    /* Callouts (use Markdown blockquote or custom divs) */
+    .callout { background: var(--callout); border: 1px solid var(--border); padding: .75rem .9rem; border-radius: .6rem; }
+
+    /* TOC (Pandoc --toc) */
+    #TOC { border: 1px solid var(--border); border-radius: .6rem; padding: 1rem; background: color-mix(in srgb, var(--accent-weak) 20%, transparent); }
+    #TOC > ul { list-style: none; padding-left: 0; }
+    #TOC a { text-decoration: none; }
+
+    /* Footnotes (Pandoc) */
+    .footnotes { font-size: .95rem; color: var(--muted); }
+    .footnotes hr { border: none; border-top: 1px solid var(--border); }
+
+    /* Utility */
+    .card { border: 1px solid var(--border); border-radius: .8rem; padding: 1rem; box-shadow: var(--shadow); background: var(--bg); }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+    /* Print friendly */
+    @media print {
+      header.site { display: none; }
+      .page { margin: 0; max-width: none; }
+      a { color: black; text-decoration: underline; }
+      pre { white-space: pre-wrap; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site">
+    <div class="site__inner">
+      <div class="brand"><span>16-825: Learning for 3D Vision HW3</span></div>
+      <div class="meta">
+        <span>Daksh Adhar</span>
+        <span> · Oct 2025</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    
+    
+    <article id="content">
+      
+      <h1 id="assignment-3-neural-volume-rendering-and-surface-rendering">Assignment 3 : Neural Volume Rendering and Surface Rendering</h1>
+      <h1 id="a.-neural-volume-rendering-80-points">A. Neural Volume Rendering (80 points)</h1>
+      <h2 id="transmittance-calculation-10-points">0. Transmittance Calculation (10 points)</h2>
+      <p>A ray through a non-homogeneous medium. The medium is composed of 3 segments (y1y2, y2y3, y3y4). Each segment has a different absorption coefficient, shown as σ1,σ2,σ3 in the figure. The length of each segment is also annotated in the figure (1m means 1 meter). As shown in Figure 1, we observe a ray going through a non-homogeneous medium. Please compute the following transmittance: •T(y1,y2) •T(y2,y4) •T(x,y4) •T(x,y3) <img src="transmittance_calculation/figure1.png" /></p>
+      <figure>
+      <img src="images/part_0.png" alt="" /><figcaption>Transmittance computation</figcaption>
+      </figure>
+      <h2 id="differentiable-volume-rendering">1. Differentiable Volume Rendering</h2>
+      <h2 id="ray-sampling-5-points">1.3. Ray sampling (5 points)</h2>
+      <p>Visualization of <code>xy_grid</code> and <code>rays</code> with the <code>vis_grid</code> and <code>vis_rays</code> functions in the <code>render_images</code> function.</p>
+      <p><img src="images/grid.png" alt="Grid" /> <img src="images/rays.png" alt="Rays" /></p>
+      <h2 id="point-sampling-5-points">1.4. Point sampling (5 points)</h2>
+      <p>Using the <code>render_points</code> method in <code>render_functions.py</code> to visualize the point samples from the first camera.</p>
+      <figure>
+      <img src="images/sample_points.png" alt="" /><figcaption>Sample points</figcaption>
+      </figure>
+      <h2 id="volume-rendering-20-points">1.5. Volume rendering (20 points)</h2>
+      <h3 id="visualization">Visualization</h3>
+      <p>Visualization of the depth using spinnign box</p>
+      <p><img src="images/part_1.gif" alt="Spiral Rendering of Part 1" /> <!-- ![Depth](ta_images/depth.png) --></p>
+      <h2 id="optimizing-a-basic-implicit-volume">2. Optimizing a basic implicit volume</h2>
+      <h2 id="loss-and-training-5-points">2.2. Loss and training (5 points)</h2>
+      <p>Loss as mean squared error between the predicted colors and ground truth colors <code>rgb_gt</code>.</p>
+      <div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>loss <span class="op">=</span> torch.<span class="bu">sum</span>((out[<span class="st">&#39;feature&#39;</span>]<span class="op">-</span>rgb_gt)<span class="op">**</span><span class="dv">2</span>)</span></code></pre></div>
+      <p>The optimized box center is at <span class="math inline">(0.25, 0.25, 0.00)</span> and the side lengths are <span class="math inline">(2.00, 1.50, 1.50)</span>.</p>
+      <h2 id="visualization-1">2.3. Visualization</h2>
+      <p>A spiral sequence of the optimized volume</p>
+      <figure>
+      <img src="images/part_2.gif" alt="" /><figcaption>Spiral Rendering of Part 2</figcaption>
+      </figure>
+      <h2 id="optimizing-a-neural-radiance-field-nerf-20-points">3. Optimizing a Neural Radiance Field (NeRF) (20 points)</h2>
+      <h2 id="visualization-2">Visualization</h2>
+      <p>Spiral rendering generated after training a NeRF for 250 epochs on 128x128 low-resolution images.</p>
+      <figure>
+      <img src="images/part_3.gif" alt="" /><figcaption>Spiral Rendering of Part 3</figcaption>
+      </figure>
+      <h2 id="nerf-extras-choose-one-more-than-one-is-extra-credit">4. NeRF Extras (CHOOSE ONE! More than one is extra credit)</h2>
+      <h3 id="view-dependence-10-points">4.1 View Dependence (10 points)</h3>
+      <p>Employing the high-res materials scene to show the view-dependent results</p>
+      <figure>
+      <img src="images/part_4.gif" alt="" /><figcaption>Spiral Rendering of Part 4</figcaption>
+      </figure>
+      <h1 id="b.-neural-surface-rendering-50-points">B. Neural Surface Rendering (50 points)</h1>
+      <h2 id="sphere-tracing-10-points">5. Sphere Tracing (10 points)</h2>
+      <p><strong>My implementaiton:</strong></p>
+      <div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">def</span> sphere_tracing( <span class="va">self</span>, implicit_fn, origins, directions, ):</span>
+      <span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>    </span>
+      <span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>    points<span class="op">=</span>origins.clone()</span>
+      <span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="va">self</span>.max_iters):</span>
+      <span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>        distance<span class="op">=</span>implicit_fn(points)</span>
+      <span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>        points<span class="op">=</span>points<span class="op">+</span>distance<span class="op">*</span>directions</span>
+      <span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>    mask<span class="op">=</span> distance<span class="op">&lt;</span><span class="fl">0.01</span></span>
+      <span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a></span>
+      <span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>    <span class="cf">return</span> (points, mask)</span></code></pre></div>
+      <p><strong>Rendering:</strong></p>
+      <figure>
+      <img src="images/part_5.gif" alt="" /><figcaption>Torus</figcaption>
+      </figure>
+      <p><strong>Description:</strong> In my sphere tracing implementation, I approximate ray surface intersections by repeatedly stepping closer to the zero-level set of the SDF. I initialize the current point as the ray origin and, for a fixed number of iterations, query the SDF to get the distance to the closest surface, then move the point forward by distance along the rays direction. Any ray, who’s final distance is below a small threshold, is marked as intersecting and point of intersection is updated.</p>
+      <h2 id="optimizing-a-neural-sdf-15-points">6. Optimizing a Neural SDF (15 points)</h2>
+      <p>Defining the <code>eikonal_loss</code> as :</p>
+      <div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>loss<span class="op">=</span> torch.mean((torch.linalg.norm(gradients,dim<span class="op">=</span><span class="dv">1</span>)<span class="op">-</span><span class="dv">1</span>)<span class="op">**</span><span class="dv">2</span>)</span></code></pre></div>
+      <p>Visualizing the input point cloud used for training, and the prediction,</p>
+      <p><img src="images/part_6_input.gif" alt="Bunny geometry" /> <img src="images/part_6.gif" alt="Bunny geometry" /></p>
+      <p>The SDF branch starts with <code>HarmonicEmbedding(3, n_harmonic_functions_xyz)</code>, then passes through <code>n_layers_distance</code> fully connected layers of width <code>n_hidden_neurons_distance</code>, with skip connections that concatenate the original embedding at selected depths (4 in this case). A final linear layer outputs a single scalar SDF per point. Unlike NeRF, the SDF branch uses a linear output head without activation, since the signed distance value is unbounded and can take both positive and negative values. During training the gradients are regressed to 1, i.e. forcing unit norm through the eikonal regularizer which encouragesthe network to learn a SDF and not any arbitrary function.</p>
+      <h2 id="volsdf-15-points">7. VolSDF (15 points)</h2>
+      <p>This will save <code>part_7_geometry.gif</code> and <code>part_7.gif</code>.</p>
+      <p>Rendering with default <code>alpha: 10.0</code> and <code>beta: 0.05</code></p>
+      <p><img src="images/part_7_geometry.gif" alt="Bulldozer geometry" /> <img src="images/part_7.gif" alt="Bulldozer color" /></p>
+      <p><strong>An intuitive explanation of what the parameters <code>alpha</code> and <code>beta</code> are doing here. Also, answer the following questions:</strong></p>
+      <p>β controls the sharpness of the SDF-to-density transition, while α scales the overall opacity or density value. The tanh term converts signed distances into a soft occupancy field i.e. points near the surface (SDF≈0) have higher density, and faraway points have lower density.</p>
+      <p><strong>1. How does high <code>beta</code> bias your learned SDF? What about low <code>beta</code>?</strong> With high β, the tanh curve becomes flatter, so the transition from surface to empty space is smoother. The SDF is biased toward broader, blurrier surfaces, as density changes gradually. With low β, the tanh curve is steeper, making density sharply concentrated around the zero-level set. The SDF approximates a crisper, more localized surface.</p>
+      <p><strong>2. Would an SDF be easier to train with volume rendering and low <code>beta</code> or high <code>beta</code>? Why?</strong> A high β makes the optimization easier at the start because gradients are smoother and more stable for volume rendering (the network sees a larger region with nonzero density).</p>
+      <p><strong>3. Would you be more likely to learn an accurate surface with high <code>beta</code> or low <code>beta</code>? Why?</strong> A low β makes training harder initially (narrow gradient region) but yields a more accurate surface once converged, since it better enforces a sharp boundary.</p>
+      <p><strong>Experiment with hyper-parameters to and attach your best results on your webpage. Comment on the settings you chose, and why they seem to work well.</strong></p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Tuned Params</th>
+      <th>Default Params</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td><img src="images/part_7_geometry_2.gif" alt="Bulldozer geometry" /></td>
+      <td><img src="images/part_7_geometry.gif" alt="Bulldozer geometry" /></td>
+      </tr>
+      <tr class="even">
+      <td><img src="images/part_7_2.gif" alt="Bulldozer color" /></td>
+      <td><img src="images/part_7.gif" alt="Bulldozer color" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>I used <strong>α = 15.0</strong> and <strong>β = 0.03</strong>, which produced the clearest reconstruction with well-defined edges and realistic opacity. The slightly higher α increased interior density for stronger surface visibility, while the lower β created a sharper SDF-to-density transition, yielding crisp surface boundaries without introducing instability during training. ## 8. Neural Surface Extras (CHOOSE ONE! More than one is extra credit)</p>
+      <h3 id="render-a-large-scene-with-sphere-tracing-10-points">8.1. Render a Large Scene with Sphere Tracing (10 points)</h3>
+      <p>The power of Sphere Tracing lies in the fact that it can render complex scenes efficiently. To observe this, we define a scene with a central sphere orbited by primitive formations, 8 spheres, 3 angled rings, 6 boxes, and 12 tiny spheres trying to mimick a space like scene.</p>
+      <figure>
+      <img src="images/part_8.gif" alt="" /><figcaption>Space scene</figcaption>
+      </figure>
+    </article>
+
+  </main>
+</body>
+</html>
