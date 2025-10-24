@@ -2,9 +2,9 @@ import torch
 import torch.nn.functional as F
 import torch.nn as nn
 from torch import autograd
+import math
 
 from ray_utils import RayBundle
-
 
 # Sphere SDF class
 class SphereSDF(torch.nn.Module):
@@ -29,7 +29,6 @@ class SphereSDF(torch.nn.Module):
             dim=-1,
             keepdim=True
         ) - self.radius
-
 
 # Box SDF class
 class BoxSDF(torch.nn.Module):
@@ -84,10 +83,127 @@ class TorusSDF(torch.nn.Module):
         )
         return (torch.linalg.norm(q, dim=-1) - self.radii[..., 1]).unsqueeze(-1)
 
+class FloatingGardenSDF(torch.nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+        
+        self.center = torch.nn.Parameter(
+            torch.tensor(cfg.center.val).float().unsqueeze(0), 
+            requires_grad=cfg.center.opt
+        )
+        
+        self.sphere_centers = []
+        self.sphere_radii = []
+        
+        self.sphere_centers.append(torch.tensor([0.0, 0.0, 0.0]))
+        self.sphere_radii.append(0.8)
+        
+        for i in range(8):
+            angle = 2 * math.pi * i / 8
+            radius = 2.0
+            height = 0.3 * math.sin(3 * angle)
+            self.sphere_centers.append(torch.tensor([
+                radius * math.cos(angle),
+                height,
+                radius * math.sin(angle)
+            ]))
+            self.sphere_radii.append(0.25 + 0.1 * math.sin(2 * angle))
+        
+        self.torus_centers = []
+        self.torus_radii = []
+        self.torus_rotations = []
+        
+        for i in range(3):
+            self.torus_centers.append(torch.tensor([0.0, 0.0, 0.0]))
+            self.torus_radii.append(torch.tensor([1.2 + i * 0.3, 0.08]))
+            self.torus_rotations.append(i * math.pi / 6)
+        
+        self.box_centers = []
+        self.box_sizes = []
+        
+        for i in range(6):
+            angle = 2 * math.pi * i / 6 + math.pi/12
+            radius = 2.8
+            height = 1.2 * math.cos(2 * angle)
+            self.box_centers.append(torch.tensor([
+                radius * math.cos(angle),
+                height,
+                radius * math.sin(angle)
+            ]))
+            self.box_sizes.append(torch.tensor([0.2, 0.4, 0.2]))
+        
+        for i in range(12):
+            angle = 2 * math.pi * i / 12
+            radius = 1.5 + 0.5 * math.sin(4 * angle)
+            height = 0.8 * math.cos(3 * angle)
+            self.sphere_centers.append(torch.tensor([
+                radius * math.cos(angle),
+                height,
+                radius * math.sin(angle)
+            ]))
+            self.sphere_radii.append(0.12)
+
+    def rotate_point(self, point, angle, axis='y'):
+        cos_a = math.cos(angle)
+        sin_a = math.sin(angle)
+        
+        if axis == 'y':
+            rotation_matrix = torch.tensor([
+                [cos_a, 0, sin_a],
+                [0, 1, 0],
+                [-sin_a, 0, cos_a]
+            ], device=point.device, dtype=point.dtype)
+        elif axis == 'x':
+            rotation_matrix = torch.tensor([
+                [1, 0, 0],
+                [0, cos_a, -sin_a],
+                [0, sin_a, cos_a]
+            ], device=point.device, dtype=point.dtype)
+        
+        return torch.matmul(point, rotation_matrix.T)
+
+    def forward(self, points):
+        points = points.view(-1, 3)
+        points_centered = points - self.center
+        
+        min_dist = torch.full((points.shape[0], 1), float('inf'), device=points.device)
+        
+        for center, radius in zip(self.sphere_centers, self.sphere_radii):
+            center = center.to(points.device)
+            dist = torch.linalg.norm(points_centered - center, dim=-1, keepdim=True) - radius
+            min_dist = torch.minimum(min_dist, dist)
+        
+        for center, radii, rotation in zip(self.torus_centers, self.torus_radii, self.torus_rotations):
+            center = center.to(points.device)
+            radii = radii.to(points.device)
+            
+            rotated_points = self.rotate_point(points_centered - center, rotation, 'x')
+            
+            q = torch.stack([
+                torch.linalg.norm(rotated_points[..., :2], dim=-1) - radii[0],
+                rotated_points[..., -1]
+            ], dim=-1)
+            dist = (torch.linalg.norm(q, dim=-1) - radii[1]).unsqueeze(-1)
+            min_dist = torch.minimum(min_dist, dist)
+        
+        for center, size in zip(self.box_centers, self.box_sizes):
+            center = center.to(points.device)
+            size = size.to(points.device)
+            
+            diff = torch.abs(points_centered - center) - size / 2.0
+            dist = torch.linalg.norm(
+                torch.maximum(diff, torch.zeros_like(diff)),
+                dim=-1
+            ) + torch.minimum(torch.max(diff, dim=-1)[0], torch.zeros_like(diff[..., 0]))
+            min_dist = torch.minimum(min_dist, dist.unsqueeze(-1))
+        
+        return min_dist
+
 sdf_dict = {
     'sphere': SphereSDF,
     'box': BoxSDF,
     'torus': TorusSDF,
+    'floating_garden': FloatingGardenSDF,
 }
 
 
@@ -155,8 +271,6 @@ class SDFVolume(torch.nn.Module):
 
         return out
 
-
-# Converts SDF into density/feature volume
 class SDFSurface(torch.nn.Module):
     def __init__(
         self,
@@ -233,14 +347,12 @@ class HarmonicEmbedding(torch.nn.Module):
         else:
             return torch.cat((embed.sin(), embed.cos()), dim=-1)
 
-
 class LinearWithRepeat(torch.nn.Linear):
     def forward(self, input):
         n1 = input[0].shape[-1]
         output1 = F.linear(input[0], self.weight[:, :n1], self.bias)
         output2 = F.linear(input[1], self.weight[:, n1:], None)
         return output1 + output2.unsqueeze(-2)
-
 
 class MLPWithInputSkips(torch.nn.Module):
     def __init__(
@@ -489,7 +601,6 @@ class NeuralSurface(torch.nn.Module):
             )[0]
         
         return distance, gradient
-
 
 implicit_dict = {
     'sdf_volume': SDFVolume,
