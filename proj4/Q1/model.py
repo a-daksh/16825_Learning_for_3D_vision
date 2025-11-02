@@ -244,7 +244,7 @@ class Gaussians:
         if self.is_isotropic:
 
             ### YOUR CODE HERE ###
-            I=torch.eye(3).unsqueeze(0) # (N=1,3,3)
+            I=torch.eye(3).unsqueeze(0).to(self.device) # (N=1,3,3)
             scales=(scales**2).unsqueeze(-1) # (N,1,1)
             cov_3D = scales*I  # (N, 3, 3)
 
