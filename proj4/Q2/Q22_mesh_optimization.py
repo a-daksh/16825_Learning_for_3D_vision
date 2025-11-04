@@ -78,7 +78,7 @@ def optimize_mesh_texture(
     query_cameras = [] # optional
     phis = torch.linspace(-180, 180, 30)
     for phi in phis:
-        R, T = look_at_view_transform(dist=5, azim=phi, elev=30)
+        R, T = look_at_view_transform(dist=5, azim=phi, elev=15)
         camera = FoVPerspectiveCameras(fov=60, R=R, T=T, device=device)
         query_cameras.append(camera)
 
