@@ -31,7 +31,7 @@ def optimize_nerf(
     """
 
     # Step 1. Create text embeddings from prompt
-    embeddings = prepare_embeddings(sds, prompt, neg_prompt, view_dependent=False)
+    embeddings = prepare_embeddings(sds, prompt, neg_prompt, view_dependent=args.view_dep_text)
 
     # Step 2. Set up NeRF model
     model = NeRFNetwork(args).to(device)
@@ -162,7 +162,22 @@ def optimize_nerf(
                 text_cond = embeddings["default"]
             else:
                 ### YOUR CODE HERE ###
-                pass
+                azimuth_deg = azimuth.item() 
+                if azimuth_deg < 0:
+                    azimuth_deg = azimuth_deg + 360
+                
+                if azimuth_deg <= 90:
+                    weight = azimuth_deg / 90.0
+                    text_cond = (1 - weight) * embeddings["front"] + weight * embeddings["side"]
+                elif azimuth_deg <= 180:
+                    weight = (azimuth_deg - 90) / 90.0
+                    text_cond = (1 - weight) * embeddings["side"] + weight * embeddings["back"]
+                elif azimuth_deg <= 270:
+                    weight = (azimuth_deg - 180) / 90.0
+                    text_cond = (1 - weight) * embeddings["back"] + weight * embeddings["side"]
+                else:
+                    weight = (azimuth_deg - 270) / 90.0
+                    text_cond = (1 - weight) * embeddings["side"] + weight * embeddings["front"]
 
   
             ### YOUR CODE HERE ###
