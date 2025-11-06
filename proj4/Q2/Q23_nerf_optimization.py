@@ -7,6 +7,8 @@ import time
 import imageio
 import numpy as np
 import torch
+import torchvision
+import torchvision.transforms.functional as FT
 from nerf.config_parser import add_config_arguments
 from nerf.network_grid import NeRFNetwork
 from nerf.provider import NeRFDataset
@@ -73,7 +75,7 @@ def optimize_nerf(
     checkpoint_path = osp.join(sds.output_dir, f"nerf_checkpoint.pth")
     os.makedirs(f"{sds.output_dir}/images", exist_ok=True)
     os.makedirs(f"{sds.output_dir}/videos", exist_ok=True)
-
+    upscaler = torchvision.transforms.Resize(size=(512, 512), interpolation=FT.InterpolationMode.BILINEAR)
     max_epoch = np.ceil(args.iters / len(train_loader)).astype(np.int32)
     for epoch in range(max_epoch):
         model.train()
@@ -164,8 +166,9 @@ def optimize_nerf(
 
   
             ### YOUR CODE HERE ###
-            latents = 
-            loss = 
+            upscaled_pred_rgb=upscaler(pred_rgb)
+            latents = sds.encode_imgs(upscaled_pred_rgb)
+            loss = sds.sds_loss(latents, text_cond, text_uncond) 
 
             # regularizations
             if args.lambda_entropy > 0:
@@ -301,11 +304,10 @@ if __name__ == "__main__":
     ### YOUR CODE HERE ###
     # You wil need to tune the following parameters to obtain good NeRF results
     ### regularizations
-    parser.add_argument('--lambda_entropy', type=float, default=0, help="loss scale for alpha entropy")
-    parser.add_argument('--lambda_orient', type=float, default=0, help="loss scale for orientation")
+    parser.add_argument('--lambda_entropy', type=float, default=1e-4, help="loss scale for alpha entropy")
+    parser.add_argument('--lambda_orient', type=float, default=1e-2, help="loss scale for orientation")
     ### shading options
-    parser.add_argument('--latent_iter_ratio', type=float, default=0, help="training iters that only use albedo shading")
-
+    parser.add_argument('--latent_iter_ratio', type=float, default=0.2, help="training iters that only use albedo shading")
 
     parser.add_argument(
         "--postfix", type=str, default="", help="Postfix for the output directory"
