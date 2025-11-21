@@ -18,6 +18,7 @@ downloads/
 eggs/
 r2n2_shapenet_dataset/
 r2n2_shapenet_dataset_full/
+proj5/data/
 .eggs/
 lib/
 lib64/
