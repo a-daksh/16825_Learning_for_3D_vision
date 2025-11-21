@@ -12,6 +12,7 @@ def create_parser():
 
     parser.add_argument('--num_cls_class', type=int, default=3, help='The number of classes')
     parser.add_argument('--num_points', type=int, default=10000, help='The number of points per object to be included in the input data')
+    parser.add_argument('--batch_size', type=int, default=256, help='Batch size for evaluation')
 
     # Directories and checkpoint/sample iterations
     parser.add_argument('--load_checkpoint', type=str, default='model_epoch_0')
@@ -51,9 +52,21 @@ if __name__ == '__main__':
     test_label = torch.from_numpy(np.load(args.test_label))
 
     # ------ TO DO: Make Prediction ------
-    pred_label = model(test_data).argmax(-1)
+    num_samples=test_data.shape[0]
+    correct=0
+    total=0
+    with torch.no_grad():
+        for start in range(0, num_samples, args.batch_size):
+            end = min(start + args.batch_size, num_samples)
+            
+            batch_data = test_data[start:end].to(args.device)
+            batch_label = test_label[start:end].to(args.device)
+            pred_label = model(batch_data).argmax(-1)
+
+            correct += pred_label.eq(batch_label).sum().item()
+            total += batch_label.size(0)
 
     # Compute Accuracy
-    test_accuracy = pred_label.eq(test_label.data).cpu().sum().item() / (test_label.size()[0])
+    test_accuracy = correct / total
     print ("test accuracy: {}".format(test_accuracy))
 
