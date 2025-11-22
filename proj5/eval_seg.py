@@ -14,6 +14,7 @@ def create_parser():
 
     parser.add_argument('--num_seg_class', type=int, default=6, help='The number of segmentation classes')
     parser.add_argument('--num_points', type=int, default=10000, help='The number of points per object to be included in the input data')
+    parser.add_argument('--batch_size', type=int, default=256, help='Batch size for evaluation')
 
     # Directories and checkpoint/sample iterations
     parser.add_argument('--load_checkpoint', type=str, default='model_epoch_0')
@@ -32,11 +33,11 @@ if __name__ == '__main__':
     parser = create_parser()
     args = parser.parse_args()
     args.device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
-
+    args.output_dir = args.output_dir + "/seg"
     create_dir(args.output_dir)
 
     # ------ TO DO: Initialize Model for Segmentation Task  ------
-    model = 
+    model = seg_model().to(args.device)
     
     # Load Model Checkpoint
     model_path = './checkpoints/seg/{}.pt'.format(args.load_checkpoint)
@@ -53,11 +54,29 @@ if __name__ == '__main__':
     test_label = torch.from_numpy((np.load(args.test_label))[:,ind])
 
     # ------ TO DO: Make Prediction ------
-    pred_label = 
+    num_samples=test_data.shape[0]
+    correct=0
+    total=0
+    with torch.no_grad():
+        for start in range(0, num_samples, args.batch_size):
+            end = min(start + args.batch_size, num_samples)
+            
+            batch_data = test_data[start:end].to(args.device)
+            batch_label = test_label[start:end].to(args.device)
+            pred_label = model(batch_data).argmax(-1)
 
-    test_accuracy = pred_label.eq(test_label.data).cpu().sum().item() / (test_label.reshape((-1,1)).size()[0])
+            correct += pred_label.eq(batch_label).sum().item()
+            total += batch_label.numel()
+
+    # Compute Accuracy
+    test_accuracy = correct / total
     print ("test accuracy: {}".format(test_accuracy))
 
     # Visualize Segmentation Result (Pred VS Ground Truth)
+    # Compute prediction for the specific sample to visualize
+    with torch.no_grad():
+        sample_data = test_data[args.i:args.i+1].to(args.device)
+        pred_label_sample = model(sample_data).argmax(-1).cpu()[0]
+    
     viz_seg(test_data[args.i], test_label[args.i], "{}/gt_{}.gif".format(args.output_dir, args.exp_name), args.device)
-    viz_seg(test_data[args.i], pred_label[args.i], "{}/pred_{}.gif".format(args.output_dir, args.exp_name), args.device)
+    viz_seg(test_data[args.i], pred_label_sample, "{}/pred_{}.gif".format(args.output_dir, args.exp_name), args.device)

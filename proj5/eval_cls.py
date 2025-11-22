@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser = create_parser()
     args = parser.parse_args()
     args.device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
-
+    args.output_dir = args.output_dir + "/cls"
     create_dir(args.output_dir)
 
     # ------ TO DO: Initialize Model for Classification Task ------
