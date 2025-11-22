@@ -1,0 +1,459 @@
+<!-- Run the command from project folder -->
+<!-- pandoc Proj0.md -o index.html --template=../theme.html  --metadata title="16-825: Learning for 3D Vision HW0" --metadata author="Daksh Adhar" --metadata date="Sep 2025" -->
+<!-- Then do scp -r ~/16825_L3D/proj0 dadhar@linux.andrew.cmu.edu:/afs/andrew.cmu.edu/course/16/825/www/projects/dadhar/ -->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>16-825: Learning for 3D Vision HW5</title>
+  <meta name="author" content="Daksh Adhar" />
+  <meta name="date" content="Nov 2025" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #0f172a;          /* slate-900 */
+      --muted: #475569;       /* slate-600 */
+      --border: #e2e8f0;      /* slate-200 */
+      --accent: #2563eb;      /* blue-600 */
+      --accent-weak: #dbeafe; /* blue-100 */
+      --code-bg: #0b1020;     /* dark indigo */
+      --code-fg: #e6e6e6;
+      --inline-bg: #f1f5f9;   /* slate-100 */
+      --callout: #fef3c7;     /* amber-100 */
+      --link-visited: #7c3aed;/* violet-600 */
+      --shadow: 0 1px 2px rgba(2,6,23,0.06), 0 4px 16px rgba(2,6,23,0.06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --fg: #e5e7eb;
+        --muted: #94a3b8;
+        --border: #1f2a44;
+        --accent: #60a5fa;
+        --accent-weak: #0b2a55;
+        --code-bg: #0d0f17;
+        --code-fg: #d1d5db;
+        --inline-bg: #1f2937;
+        --callout: #3b2f0b;
+        --link-visited: #a78bfa;
+        --shadow: none;
+      }
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--fg);
+      background: var(--bg);
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Layout */
+    .page {
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 1.25rem 4rem 1.25rem;
+    }
+    header.site {
+      position: sticky;
+      top: 0; backdrop-filter: saturate(180%) blur(8px);
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      border-bottom: 1px solid var(--border);
+    }
+    .site__inner { max-width: 900px; margin: 0 auto; padding: .75rem 1.25rem; display: flex; align-items: baseline; gap: .75rem; }
+    .brand { font-weight: 700; letter-spacing: .2px; }
+    .meta { color: var(--muted); font-size: .9rem; margin-left: auto; }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 { line-height: 1.25; margin: 2rem 0 0.75rem; font-weight: 700; }
+    h1 { font-size: clamp(1.8rem, 1.2rem + 2vw, 2.4rem); }
+    h2 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem); border-bottom: 1px solid var(--border); padding-bottom: .25rem; }
+    h3 { font-size: 1.25rem; }
+    p { margin: 0 0 1rem; }
+    small, figcaption { color: var(--muted); }
+
+    /* Links */
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:visited { color: var(--link-visited); }
+
+    /* Code */
+    code { background: var(--inline-bg); padding: .15rem .35rem; border-radius: .3rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 0.95em; }
+    pre { background: var(--code-bg); color: var(--code-fg); padding: 1rem; border-radius: .6rem; overflow: auto; box-shadow: var(--shadow); }
+    pre code { background: transparent; padding: 0; color: inherit; }
+
+    /* Lists & blockquotes */
+    ul, ol { padding-left: 1.5rem; }
+    blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: .25rem solid var(--accent); background: var(--accent-weak); color: #0f172a; }
+    @media (prefers-color-scheme: dark) { blockquote { color: var(--fg); } }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-variant-numeric: tabular-nums; }
+    thead th { text-align: left; border-bottom: 2px solid var(--border); }
+    th, td { padding: .5rem .6rem; border-bottom: 1px solid var(--border); }
+    tbody tr:hover { background: color-mix(in srgb, var(--accent-weak) 40%, transparent); }
+
+    /* Images/figures */
+    img, video, canvas { max-width: 100%; height: auto; border-radius: .5rem; }
+    figure { margin: 1.25rem 0; }
+
+    /* Callouts (use Markdown blockquote or custom divs) */
+    .callout { background: var(--callout); border: 1px solid var(--border); padding: .75rem .9rem; border-radius: .6rem; }
+
+    /* TOC (Pandoc --toc) */
+    #TOC { border: 1px solid var(--border); border-radius: .6rem; padding: 1rem; background: color-mix(in srgb, var(--accent-weak) 20%, transparent); }
+    #TOC > ul { list-style: none; padding-left: 0; }
+    #TOC a { text-decoration: none; }
+
+    /* Footnotes (Pandoc) */
+    .footnotes { font-size: .95rem; color: var(--muted); }
+    .footnotes hr { border: none; border-top: 1px solid var(--border); }
+
+    /* Utility */
+    .card { border: 1px solid var(--border); border-radius: .8rem; padding: 1rem; box-shadow: var(--shadow); background: var(--bg); }
+    .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+    /* Print friendly */
+    @media print {
+      header.site { display: none; }
+      .page { margin: 0; max-width: none; }
+      a { color: black; text-decoration: underline; }
+      pre { white-space: pre-wrap; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site">
+    <div class="site__inner">
+      <div class="brand"><span>16-825: Learning for 3D Vision HW5</span></div>
+      <div class="meta">
+        <span>Daksh Adhar</span>
+        <span> · Nov 2025</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    
+    
+    <article id="content">
+      
+      <h1 id="assignment-5-pointnet-for-classification-and-segmentation">16-825 Assignment 5: PointNet for Classification and Segmentation</h1>
+      <h2 id="overview">Overview</h2>
+      <p>In this assignment, a PointNet based architecture for classification and segmentation with point clouds is implemented. Q1 and Q2 focus on implementing, training and testing models. Q3 quantitatively analyzes model robustness.</p>
+      <h2 id="table-of-contents">Table of Contents</h2>
+      <ul>
+      <li><a href="#q1-classification-model-40-points">Q1. Classification Model (40 points)</a></li>
+      <li><a href="#q2-segmentation-model-40-points">Q2. Segmentation Model (40 points)</a></li>
+      <li><a href="#q3-robustness-analysis-20-points">Q3. Robustness Analysis (20 points)</a></li>
+      </ul>
+      <h2 id="q1.-classification-model-40-points">Q1. Classification Model (40 points)</h2>
+      <p><strong>Overall Test Accuracy: 92.96%</strong></p>
+      <h3 id="visualizations">Visualizations</h3>
+      <p>The visualizations show the original point cloud colored based on the predicted class label (Red = Chair, Green = Vase, Blue = Lamp).</p>
+      <h4 id="correct-predictions">Correct Predictions</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Object</th>
+      <th>Ground Truth</th>
+      <th>Prediction</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td>Chair (Class 0)</td>
+      <td><img src="output/cls/gt_q1_chair.gif" alt="Chair GT" /></td>
+      <td><img src="output/cls/pred_q1_chair.gif" alt="Chair Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>Vase (Class 1)</td>
+      <td><img src="output/cls/gt_q1_vase.gif" alt="Vase GT" /></td>
+      <td><img src="output/cls/pred_q1_vase.gif" alt="Vase Pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td>Lamp (Class 2)</td>
+      <td><img src="output/cls/gt_q1_lamp.gif" alt="Lamp GT" /></td>
+      <td><img src="output/cls/pred_q1_lamp.gif" alt="Lamp Pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <h4 id="incorrect-predictions">Incorrect Predictions</h4>
+      <p>Interestingly, no misclassified chair samples were found in the test set, indicating that the model performs very well on chair classification. However, failure cases were found for vases and lamps:</p>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Object</th>
+      <th>Ground Truth</th>
+      <th>Prediction</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td>Vase (misclassified as chair)</td>
+      <td><img src="output/cls/gt_q1_vase_inc.gif" alt="Vase GT Incorrect" /></td>
+      <td><img src="output/cls/pred_q1_vase_inc.gif" alt="Vase Pred Incorrect" /></td>
+      </tr>
+      <tr class="even">
+      <td>Lamp (misclassified as vase)</td>
+      <td><img src="output/cls/gt_q1_lamp_inc.gif" alt="Lamp GT Incorrect" /></td>
+      <td><img src="output/cls/pred_q1_lamp_inc.gif" alt="Lamp Pred Incorrect" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The failure cases reveal interesting patterns in the model’s learned representations. The vase misclassified as a chair suggests that certain vase shapes with vertical structures might share geometric features with chairs, particularly in their overall silhouette. Similarly, the lamp misclassified as a vase indicates that lamps with rounded bases and vertical elements can be confused with vases. The absence of chair misclassifications suggests that chairs have more distinctive geometric features (such as seat-back-leg structures) that the model learns to distinguish effectively. These failures highlight that the model relies heavily on global shape features rather than fine-grained details, which can lead to confusion between geometrically similar object classes. A potential way to fix this would be to have an architecture that models local geometric neighborhoods better, so we can discriminate objects using local structure rather than only overall form.</p>
+      <h2 id="q2.-segmentation-model-40-points">Q2. Segmentation Model (40 points)</h2>
+      <p><strong>Overall Test Accuracy: 82.77%</strong></p>
+      <h3 id="visualizations-1">Visualizations</h3>
+      <p>The visualizations show point clouds colored by their segmentation labels.</p>
+      <h4 id="good-predictions">Good Predictions</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Sample</th>
+      <th>Accuracy</th>
+      <th>Ground Truth</th>
+      <th>Prediction</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td>Sample 0</td>
+      <td>87.53%</td>
+      <td><img src="output/seg/gt_q2_sample_0.gif" alt="Sample 0 GT" /></td>
+      <td><img src="output/seg/pred_q2_sample_0.gif" alt="Sample 0 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>Sample 1</td>
+      <td>86.35%</td>
+      <td><img src="output/seg/gt_q2_sample_1.gif" alt="Sample 1 GT" /></td>
+      <td><img src="output/seg/pred_q2_sample_1.gif" alt="Sample 1 Pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td>Sample 2</td>
+      <td>96.70%</td>
+      <td><img src="output/seg/gt_q2_sample_2.gif" alt="Sample 2 GT" /></td>
+      <td><img src="output/seg/pred_q2_sample_2.gif" alt="Sample 2 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>Sample 3</td>
+      <td>94.69%</td>
+      <td><img src="output/seg/gt_q2_sample_3.gif" alt="Sample 3 GT" /></td>
+      <td><img src="output/seg/pred_q2_sample_3.gif" alt="Sample 3 Pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <h4 id="poor-predictions">Poor Predictions</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Sample</th>
+      <th>Accuracy</th>
+      <th>Ground Truth</th>
+      <th>Prediction</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td>Sample 4</td>
+      <td>62.60%</td>
+      <td><img src="output/seg/gt_q2_sample_4_inc.gif" alt="Sample 4 GT" /></td>
+      <td><img src="output/seg/pred_q2_sample_4_inc.gif" alt="Sample 4 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>Sample 5</td>
+      <td>79.50%</td>
+      <td><img src="output/seg/gt_q2_sample_5_inc.gif" alt="Sample 5 GT" /></td>
+      <td><img src="output/seg/pred_q2_sample_5_inc.gif" alt="Sample 5 Pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The segmentation results show that the model performs well on ‘standard’ chairs that are upright, four legged, and have an obvious back. However, the model struggles on samples with complex geometries, occluded parts, and ambiguous boundaries between segments. A key point to note that this seegmentaiton is messed up only at the boundary of regions indicating that most areas are identified well but the transition between arm and legs or similar features are difficult to comprehend.</p>
+      <h2 id="q3.-robustness-analysis-20-points">Q3. Robustness Analysis (20 points)</h2>
+      <h3 id="q3.1-rotation-experiments">Q3.1: Rotation Experiments</h3>
+      <p>To test the robustness of both models, input point clouds were rotated by various angles (10°, 30°, 60°, 90°) around one axis.</p>
+      <h4 id="classification">Classification</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Rotation</th>
+      <th>Test Accuracy</th>
+      <th>Ground Truth</th>
+      <th>Prediction</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td>10°</td>
+      <td>91.29%</td>
+      <td><img src="output/cls/gt_q3_cls_rot10.gif" alt="Rot10 GT" /></td>
+      <td><img src="output/cls/pred_q3_cls_rot10.gif" alt="Rot10 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>30°</td>
+      <td>54.66%</td>
+      <td><img src="output/cls/gt_q3_cls_rot30.gif" alt="Rot30 GT" /></td>
+      <td><img src="output/cls/pred_q3_cls_rot30.gif" alt="Rot30 Pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td>60°</td>
+      <td>25.28%</td>
+      <td><img src="output/cls/gt_q3_cls_rot60.gif" alt="Rot60 GT" /></td>
+      <td><img src="output/cls/pred_q3_cls_rot60.gif" alt="Rot60 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>90°</td>
+      <td>21.30%</td>
+      <td><img src="output/cls/gt_q3_cls_rot90.gif" alt="Rot90 GT" /></td>
+      <td><img src="output/cls/pred_q3_cls_rot90.gif" alt="Rot90 Pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The rotation experiments reveal that the classification model is highly sensitive to rotation, with accuracy dropping dramatically with the angle. The model appears to rely heavily on the canonical orientation seen during training, where objects are almost always upright. Thus, PointNet without rotation augmentation learns orientation-specific features rather than rotation-invariant representations.</p>
+      <h4 id="segmentation">Segmentation</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Rotation</th>
+      <th>Test Accuracy</th>
+      <th>Sample Accuracy</th>
+      <th>Ground Truth</th>
+      <th>Prediction</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td>10°</td>
+      <td>82.10%</td>
+      <td>94.49%</td>
+      <td><img src="output/seg/gt_q3_seg_rot10.gif" alt="Rot10 GT" /></td>
+      <td><img src="output/seg/pred_q3_seg_rot10.gif" alt="Rot10 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>30°</td>
+      <td>67.78%</td>
+      <td>64.11%</td>
+      <td><img src="output/seg/gt_q3_seg_rot30.gif" alt="Rot30 GT" /></td>
+      <td><img src="output/seg/pred_q3_seg_rot30.gif" alt="Rot30 Pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td>60°</td>
+      <td>29.51%</td>
+      <td>51.40%</td>
+      <td><img src="output/seg/gt_q3_seg_rot60.gif" alt="Rot60 GT" /></td>
+      <td><img src="output/seg/pred_q3_seg_rot60.gif" alt="Rot60 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>90°</td>
+      <td>25.94%</td>
+      <td>39.28%</td>
+      <td><img src="output/seg/gt_q3_seg_rot90.gif" alt="Rot90 GT" /></td>
+      <td><img src="output/seg/pred_q3_seg_rot90.gif" alt="Rot90 Pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Similar to classification, the segmentation model is highly sensitive to rotation. The sample accuracy is higher than the overall test accuracy, indicating that this particular sample is more robust to small rotations than most test samples. But as rotation increases, both metrics drop noticeably. The model also seems to rely on the typical vertical layout of chair parts, predicting legs at the bottom and the base in the middle. When the chair is rotated, these height cues shift, but the model still makes predictions based on the original layout.</p>
+      <h3 id="q3.2-point-count-experiments">Q3.2: Point Count Experiments</h3>
+      <p>To test the robustness of both models, the number of points sampled per object was varied (100, 1000, 2000, 5000, 10000 points).</p>
+      <h4 id="classification-1">Classification</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Points</th>
+      <th>Test Accuracy</th>
+      <th>Ground Truth</th>
+      <th>Prediction</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td>100</td>
+      <td>91.50%</td>
+      <td><img src="output/cls/gt_q3_cls_points_100.gif" alt="Points100 GT" /></td>
+      <td><img src="output/cls/pred_q3_cls_points_100.gif" alt="Points100 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>1000</td>
+      <td>92.65%</td>
+      <td><img src="output/cls/gt_q3_cls_points_1000.gif" alt="Points1000 GT" /></td>
+      <td><img src="output/cls/pred_q3_cls_points_1000.gif" alt="Points1000 Pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td>2000</td>
+      <td>92.65%</td>
+      <td><img src="output/cls/gt_q3_cls_points_2000.gif" alt="Points2000 GT" /></td>
+      <td><img src="output/cls/pred_q3_cls_points_2000.gif" alt="Points2000 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>5000</td>
+      <td>92.86%</td>
+      <td><img src="output/cls/gt_q3_cls_points_5000.gif" alt="Points5000 GT" /></td>
+      <td><img src="output/cls/pred_q3_cls_points_5000.gif" alt="Points5000 Pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td>10000</td>
+      <td>92.96%</td>
+      <td><img src="output/cls/gt_q3_cls_points_10000.gif" alt="Points10000 GT" /></td>
+      <td><img src="output/cls/pred_q3_cls_points_10000.gif" alt="Points10000 Pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>Surprisingly the classification model is pretty robust to variations in point cloud density as accuracy remains high even with only 100 points per object, dropping by less than 1.5% compared to the full 10,000 points. This robustness stems from our use of max pooling, which aggregates global features from all points regardless of their density. The max pooling operation extracts the most salient features from the point cloud, making the model relatively insensitive to the total number of points as long as the key discriminative features are present.</p>
+      <h4 id="segmentation-1">Segmentation</h4>
+      <table>
+      <thead>
+      <tr class="header">
+      <th>Points</th>
+      <th>Test Accuracy</th>
+      <th>Sample Accuracy</th>
+      <th>Ground Truth</th>
+      <th>Prediction</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class="odd">
+      <td>100</td>
+      <td>79.87%</td>
+      <td>77.00%</td>
+      <td><img src="output/seg/gt_q3_seg_points_100.gif" alt="Points100 GT" /></td>
+      <td><img src="output/seg/pred_q3_seg_points_100.gif" alt="Points100 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>1000</td>
+      <td>82.18%</td>
+      <td>88.50%</td>
+      <td><img src="output/seg/gt_q3_seg_points_1000.gif" alt="Points1000 GT" /></td>
+      <td><img src="output/seg/pred_q3_seg_points_1000.gif" alt="Points1000 Pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td>2000</td>
+      <td>82.58%</td>
+      <td>89.35%</td>
+      <td><img src="output/seg/gt_q3_seg_points_2000.gif" alt="Points2000 GT" /></td>
+      <td><img src="output/seg/pred_q3_seg_points_2000.gif" alt="Points2000 Pred" /></td>
+      </tr>
+      <tr class="even">
+      <td>5000</td>
+      <td>82.71%</td>
+      <td>86.88%</td>
+      <td><img src="output/seg/gt_q3_seg_points_5000.gif" alt="Points5000 GT" /></td>
+      <td><img src="output/seg/pred_q3_seg_points_5000.gif" alt="Points5000 Pred" /></td>
+      </tr>
+      <tr class="odd">
+      <td>10000</td>
+      <td>82.77%</td>
+      <td>87.53%</td>
+      <td><img src="output/seg/gt_q3_seg_points_10000.gif" alt="Points10000 GT" /></td>
+      <td><img src="output/seg/pred_q3_seg_points_10000.gif" alt="Points10000 Pred" /></td>
+      </tr>
+      </tbody>
+      </table>
+      <p>The segmentation model also shows good robustness to point count variations, however, there’s more variation in sample accuracy, indicating that individual object performance can vary significantly with their density. The relatively stable test accuracy suggests that PointNet’s architecture can handle different point densities for segmentation, though performance improves with more points as they provide better coverage of object surfaces and boundaries. The variation in sample accuracy highlights that some objects require more points to accurately segment all parts, particularly when dealing with fine details or complex geometries. A possible issue, as noted earlier, is that the model may have overfit to the typical vertical layout of chair components, using height-based cues for arms, bases, and legs, which could explain why segmentation appears strong despite this bias.</p>
+    </article>
+
+  </main>
+</body>
+</html>
