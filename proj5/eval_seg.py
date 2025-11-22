@@ -86,6 +86,15 @@ if __name__ == '__main__':
     with torch.no_grad():
         sample_data = test_data[args.i:args.i+1].to(args.device)
         pred_label_sample = model(sample_data).argmax(-1).cpu()[0]
+        gt_label_sample = test_label[args.i]
     
-    viz_seg(test_data[args.i], test_label[args.i], "{}/gt_{}.gif".format(args.output_dir, args.exp_name), args.device)
+    sample_correct = (pred_label_sample == gt_label_sample).sum().item()
+    sample_total = gt_label_sample.numel()
+    sample_accuracy = sample_correct / sample_total
+    
+    print("\nSample {}:".format(args.i))
+    print("  Points correctly segmented: {}/{}".format(sample_correct, sample_total))
+    print("  Sample accuracy: {:.4f} ({:.2f}%)".format(sample_accuracy, sample_accuracy * 100))
+    
+    viz_seg(test_data[args.i], gt_label_sample, "{}/gt_{}.gif".format(args.output_dir, args.exp_name), args.device)
     viz_seg(test_data[args.i], pred_label_sample, "{}/pred_{}.gif".format(args.output_dir, args.exp_name), args.device)
