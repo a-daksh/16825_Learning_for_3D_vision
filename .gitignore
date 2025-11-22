@@ -8,7 +8,7 @@ outputs/
 *.pth
 # C extensions
 *.so
-
+checkpoints/
 # Distribution / packaging
 .Python
 build/
