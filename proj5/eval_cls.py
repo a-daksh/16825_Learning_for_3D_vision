@@ -3,7 +3,7 @@ import argparse
 
 import torch
 from models import cls_model
-from utils import create_dir
+from utils import create_dir, viz_cls
 
 def create_parser():
     """Creates a parser for command-line arguments.
@@ -70,3 +70,5 @@ if __name__ == '__main__':
     test_accuracy = correct / total
     print ("test accuracy: {}".format(test_accuracy))
 
+    viz_cls(test_data[args.i], test_label[args.i].item(), "{}/gt_{}.gif".format(args.output_dir, args.exp_name), args.device)
+    viz_cls(test_data[args.i], pred_label[args.i].item(), "{}/pred_{}.gif".format(args.output_dir, args.exp_name), args.device)
